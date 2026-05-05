@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard de Ahorros</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+font-family: Arial;
+background: #f4f6f8;
+margin: 0;
+padding: 20px;
+}
+
+.container {
+max-width: 1000px;
+margin: auto;
+}
+
+.card {
+background: white;
+padding: 20px;
+margin-bottom: 20px;
+border-radius: 10px;
+}
+
+input, select {
+width: 100%;
+padding: 8px;
+margin-top: 5px;
+margin-bottom: 10px;
+}
+
+button {
+padding: 10px;
+width: 100%;
+cursor: pointer;
+}
+
+table {
+width: 100%;
+border-collapse: collapse;
+}
+
+th, td {
+border: 1px solid #ccc;
+padding: 8px;
+text-align: center;
+}
+
+th {
+background: #007bff;
+color: white;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>📊 Dashboard de Ahorros</h2>
+
+<div class="card">
+<h3>Registrar ahorro</h3>
+
+<input id="proyecto" placeholder="Proyecto">
+<input id="responsable" placeholder="Responsable">
+
+<select id="tipo">
+<option>Material</option>
+<option>Mano de obra</option>
+<option>Tiempo</option>
+<option>Proveedor</option>
+</select>
+
+<input type="number" id="original" placeholder="Costo original">
+<input type="number" id="optimizado" placeholder="Costo optimizado">
+
+<button onclick="guardar()">Guardar</button>
+</div>
+
+<div class="card">
+<h3>Filtro por proyecto</h3>
+<select id="filtro" onchange="cargar()">
+<option value="todos">Todos</option>
+</select>
+</div>
+
+<div class="card">
+<h3>Gráfica de ahorros</h3>
+<canvas id="chart"></canvas>
+</div>
+
+<div class="card">
+<h3>Registros</h3>
+
+<table>
+<thead>
+<tr>
+<th>Proyecto</th>
+<th>Responsable</th>
+<th>Tipo</th>
+<th>Original</th>
+<th>Optimizado</th>
+<th>Ahorro</th>
+<th>Acciones</th>
+</tr>
+</thead>
+<tbody id="tabla"></tbody>
+</table>
+
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs,
+doc,
+deleteDoc,
+updateDoc,
+getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// 🔥 FIREBASE CONFIG
+const firebaseConfig = {
+apiKey: "AIzaSyDbGafoJEyBDRu3CUNErYWWMiTTopFSw4Y",
+authDomain: "dashboard-ahorros.firebaseapp.com",
+projectId: "dashboard-ahorros",
+storageBucket: "dashboard-ahorros.firebasestorage.app",
+messagingSenderId: "182706196966",
+appId: "1:182706196966:web:582eb05fe372327f720627"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let editId = null;
+
+// ================= GUARDAR =================
+window.guardar = async function () {
+
+let p = proyecto.value;
+let r = responsable.value;
+let t = tipo.value;
+let o = parseFloat(original.value);
+let op = parseFloat(optimizado.value);
+
+if (!p || !r || isNaN(o) || isNaN(op)) {
+alert("Completa todos los campos");
+return;
+}
+
+let ahorro = o - op;
+
+if (editId) {
+
+await updateDoc(doc(db, "ahorros", editId), {
+proyecto: p,
+responsable: r,
+tipo: t,
+original: o,
+optimizado: op,
+ahorro
+});
+
+editId = null;
+
+} else {
+
+await addDoc(collection(db, "ahorros"), {
+proyecto: p,
+responsable: r,
+tipo: t,
+original: o,
+optimizado: op,
+ahorro
+});
+
+}
+
+limpiar();
+cargar();
+};
+
+// ================= CARGAR =================
+window.cargar = async function () {
+
+let snapshot = await getDocs(collection(db, "ahorros"));
+
+let tabla = document.getElementById("tabla");
+tabla.innerHTML = "";
+
+let total = 0;
+let proyectos = new Set();
+
+snapshot.forEach(docu => {
+
+let d = docu.data();
+
+proyectos.add(d.proyecto);
+
+total += d.ahorro;
+
+tabla.innerHTML += `
+<tr>
+<td>${d.proyecto}</td>
+<td>${d.responsable}</td>
+<td>${d.tipo}</td>
+<td>${d.original}</td>
+<td>${d.optimizado}</td>
+<td>${d.ahorro}</td>
+<td>
+<button onclick="editar('${docu.id}')">Editar</button>
+<button onclick="eliminar('${docu.id}')">Eliminar</button>
+</td>
+</tr>
+`;
+});
+
+// filtro dinámico
+let filtro = document.getElementById("filtro");
+filtro.innerHTML = `<option value="todos">Todos</option>`;
+proyectos.forEach(p => {
+filtro.innerHTML += `<option>${p}</option>`;
+});
+
+// gráfica
+renderChart(total);
+
+};
+
+// ================= GRAFICA =================
+function renderChart(total) {
+
+if (window.chart) window.chart.destroy();
+
+window.chart = new Chart(document.getElementById("chart"), {
+type: "bar",
+data: {
+labels: ["Ahorro Total"],
+datasets: [{
+label: "Ahorro",
+data: [total],
+backgroundColor: "green"
+}]
+}
+});
+
+}
+
+// ================= ELIMINAR =================
+window.eliminar = async function (id) {
+await deleteDoc(doc(db, "ahorros", id));
+cargar();
+};
+
+// ================= EDITAR =================
+window.editar = async function (id) {
+
+let docSnap = await getDoc(doc(db, "ahorros", id));
+let d = docSnap.data();
+
+proyecto.value = d.proyecto;
+responsable.value = d.responsable;
+tipo.value = d.tipo;
+original.value = d.original;
+optimizado.value = d.optimizado;
+
+editId = id;
+};
+
+// ================= LIMPIAR =================
+function limpiar() {
+proyecto.value = "";
+responsable.value = "";
+original.value = "";
+optimizado.value = "";
+}
+
+cargar();
+
+</script>
+
+</body>
+</html>
