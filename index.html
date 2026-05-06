@@ -10,7 +10,7 @@
 <style>
 body {
 font-family: 'Segoe UI', Arial, sans-serif;
-background: #eef1f5;
+background: #e5e7eb;
 margin: 0;
 color: #2c3e50;
 }
@@ -19,26 +19,34 @@ color: #2c3e50;
 .header {
 background: #1f2937;
 color: white;
-padding: 15px;
+padding: 15px 25px;
 font-weight: bold;
 display: flex;
 justify-content: space-between;
+align-items: center;
 }
 
 /* CONTENEDOR */
 .container {
 max-width: 1300px;
-margin: auto;
+margin: 20px auto;
 padding: 20px;
+background: #f9fafb;
+border-radius: 10px;
 }
+
+/* TITULOS */
+h2 { color: #1f2937; margin-bottom: 15px; }
+h3 { color: #374151; margin-bottom: 10px; }
 
 /* CARDS */
 .card {
-background: white;
+background: #ffffff;
 padding: 20px;
 margin-bottom: 20px;
 border-radius: 8px;
-border: 1px solid #dcdfe4;
+border: 1px solid #d1d5db;
+box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 /* INPUTS */
@@ -81,9 +89,9 @@ color: white;
 font-weight: bold;
 }
 
-.kpi:nth-child(1) { background: #ff6a00; }
-.kpi:nth-child(2) { background: #2d7ff9; }
-.kpi:nth-child(3) { background: #2ecc71; }
+.kpi.orange { background: #ff6a00; }
+.kpi.blue { background: #2d7ff9; }
+.kpi.green { background: #2ecc71; }
 
 /* TABLA */
 table {
@@ -119,9 +127,7 @@ font-size: 12px;
 td button:nth-child(1) { background: #3498db; }
 td button:nth-child(2) { background: #e74c3c; }
 
-canvas {
-margin-top: 15px;
-}
+canvas { margin-top: 15px; }
 </style>
 </head>
 
@@ -166,9 +172,9 @@ Dashboard de Ahorros
 </div>
 
 <div class="card kpis">
-<div class="kpi"><h3>Total Original</h3><p id="kpiOriginal">0</p></div>
-<div class="kpi"><h3>Total Ahorro</h3><p id="kpiAhorro">0</p></div>
-<div class="kpi"><h3>% Ahorro</h3><p id="kpiPorcentaje">0%</p></div>
+<div class="kpi orange"><h3>Total Original</h3><p id="kpiOriginal">0</p></div>
+<div class="kpi blue"><h3>Total Ahorro</h3><p id="kpiAhorro">0</p></div>
+<div class="kpi green"><h3>% Ahorro</h3><p id="kpiPorcentaje">0%</p></div>
 </div>
 
 <div class="card">
@@ -249,7 +255,6 @@ cargar();
 
 window.cargar=async()=>{
 let snapshot=await getDocs(collection(db,"ahorros"));
-let tabla=document.getElementById("tabla");
 tabla.innerHTML="";
 
 let totalOriginal=0,totalAhorro=0;
@@ -314,16 +319,11 @@ data:{labels:["Original","Ahorro"],datasets:[{data:[o,a],backgroundColor:["#ff6a
 
 function renderProyecto(data){
 if(window.chart2) chart2.destroy();
-
-window.chart2=new Chart(chartProyecto,{
+chart2=new Chart(chartProyecto,{
 type:"bar",
 data:{
 labels:Object.keys(data),
-datasets:[{
-label:"Ahorro por proyecto",
-data:Object.values(data),
-backgroundColor:"#2d7ff9"
-}]
+datasets:[{data:Object.values(data),backgroundColor:"#2d7ff9"}]
 }
 });
 }
