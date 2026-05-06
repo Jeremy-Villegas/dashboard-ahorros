@@ -8,21 +8,130 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
-body { font-family: Arial; background:#f4f6f8; padding:20px;}
-.container { max-width:1200px; margin:auto;}
-.card { background:white; padding:20px; margin-bottom:20px; border-radius:10px;}
-input,select { width:100%; padding:8px; margin:5px 0;}
-button { padding:8px; cursor:pointer; margin-top:5px;}
-table { width:100%; border-collapse:collapse;}
-th,td { border:1px solid #ccc; padding:8px; text-align:center;}
-th { background:#007bff; color:white;}
-.kpis { display:flex; gap:20px;}
-.kpi { flex:1; background:#e9f5ff; padding:15px; border-radius:10px; text-align:center;}
-canvas { margin-top:20px;}
+body {
+font-family: 'Segoe UI', Arial, sans-serif;
+background: #eef1f5;
+margin: 0;
+color: #2c3e50;
+}
+
+/* HEADER */
+.header {
+background: #1f2937;
+color: white;
+padding: 15px;
+font-weight: bold;
+display: flex;
+justify-content: space-between;
+}
+
+/* CONTENEDOR */
+.container {
+max-width: 1300px;
+margin: auto;
+padding: 20px;
+}
+
+/* CARDS */
+.card {
+background: white;
+padding: 20px;
+margin-bottom: 20px;
+border-radius: 8px;
+border: 1px solid #dcdfe4;
+}
+
+/* INPUTS */
+input, select {
+width: 100%;
+padding: 10px;
+margin: 6px 0;
+border-radius: 6px;
+border: 1px solid #cfd4da;
+background: #f9fafb;
+}
+
+/* BOTONES */
+button {
+background: #2d7ff9;
+color: white;
+border: none;
+padding: 8px 12px;
+border-radius: 6px;
+cursor: pointer;
+}
+
+button:hover {
+background: #1c5fd4;
+}
+
+/* KPIs */
+.kpis {
+display: flex;
+gap: 15px;
+flex-wrap: wrap;
+}
+
+.kpi {
+flex: 1;
+padding: 15px;
+border-radius: 8px;
+text-align: center;
+color: white;
+font-weight: bold;
+}
+
+.kpi:nth-child(1) { background: #ff6a00; }
+.kpi:nth-child(2) { background: #2d7ff9; }
+.kpi:nth-child(3) { background: #2ecc71; }
+
+/* TABLA */
+table {
+width: 100%;
+border-collapse: collapse;
+background: white;
+}
+
+th {
+background: #2c3e50;
+color: white;
+padding: 10px;
+font-size: 13px;
+}
+
+td {
+padding: 8px;
+border-bottom: 1px solid #e5e7eb;
+font-size: 13px;
+}
+
+tr:hover {
+background: #f5f7fa;
+}
+
+/* BOTONES ACCIONES */
+td button {
+margin: 2px;
+padding: 5px 8px;
+font-size: 12px;
+}
+
+td button:nth-child(1) { background: #3498db; }
+td button:nth-child(2) { background: #e74c3c; }
+
+canvas {
+margin-top: 15px;
+}
 </style>
 </head>
 
 <body>
+
+<div class="header">
+Dashboard de Ahorros
+<span>Jeremy Villegas</span>
+</div>
+
 <div class="container">
 
 <h2>📊 Dashboard Ahorros PRO MAX</h2>
@@ -113,7 +222,6 @@ const db = getFirestore(app);
 let editId=null;
 let datosGlobal=[];
 
-// GUARDAR
 window.guardar=async()=>{
 let data={
 proyecto:proyecto.value,
@@ -139,7 +247,6 @@ limpiar();
 cargar();
 };
 
-// CARGAR
 window.cargar=async()=>{
 let snapshot=await getDocs(collection(db,"ahorros"));
 let tabla=document.getElementById("tabla");
@@ -159,7 +266,6 @@ snapshot.forEach(docu=>{
 let d=docu.data();
 proyectos.add(d.proyecto);
 
-// filtros
 if(fProyecto!=="todos" && d.proyecto!==fProyecto) return;
 if(fInicio && d.fecha<fInicio) return;
 if(fFin && d.fecha>fFin) return;
@@ -187,43 +293,41 @@ tabla.innerHTML+=`
 </tr>`;
 });
 
-// KPIs
 kpiOriginal.innerText=totalOriginal;
 kpiAhorro.innerText=totalAhorro;
 kpiPorcentaje.innerText= totalOriginal?((totalAhorro/totalOriginal)*100).toFixed(2)+"%":0;
 
-// filtro proyectos
 filtroProyecto.innerHTML='<option value="todos">Todos</option>';
 proyectos.forEach(p=>filtroProyecto.innerHTML+=`<option>${p}</option>`);
 
-// graficas
 renderGeneral(totalOriginal,totalAhorro);
 renderProyecto(ahorroPorProyecto);
 };
 
-// GRAFICA GENERAL
 function renderGeneral(o,a){
 if(window.chart1) chart1.destroy();
 window.chart1=new Chart(chartGeneral,{
 type:"bar",
-data:{labels:["Original","Ahorro"],datasets:[{data:[o,a],backgroundColor:["red","green"]}]}
+data:{labels:["Original","Ahorro"],datasets:[{data:[o,a],backgroundColor:["#ff6a00","#2ecc71"]}]}
 });
 }
 
-// GRAFICA POR PROYECTO
 function renderProyecto(data){
 if(window.chart2) chart2.destroy();
 
-let labels=Object.keys(data);
-let valores=Object.values(data);
-
 window.chart2=new Chart(chartProyecto,{
 type:"bar",
-data:{labels:labels,datasets:[{label:"Ahorro por proyecto",data:valores}]}
+data:{
+labels:Object.keys(data),
+datasets:[{
+label:"Ahorro por proyecto",
+data:Object.values(data),
+backgroundColor:"#2d7ff9"
+}]
+}
 });
 }
 
-// EXPORTAR
 window.exportarExcel=()=>{
 let ws=XLSX.utils.json_to_sheet(datosGlobal);
 let wb=XLSX.utils.book_new();
@@ -231,7 +335,6 @@ XLSX.utils.book_append_sheet(wb,ws,"Ahorros");
 XLSX.writeFile(wb,"ahorros.xlsx");
 };
 
-// EDITAR
 window.editar=async(id)=>{
 let docSnap=await getDoc(doc(db,"ahorros",id));
 let d=docSnap.data();
@@ -246,7 +349,6 @@ optimizado.value=d.optimizado;
 editId=id;
 };
 
-// ELIMINAR
 window.eliminar=async(id)=>{
 await deleteDoc(doc(db,"ahorros",id));
 cargar();
