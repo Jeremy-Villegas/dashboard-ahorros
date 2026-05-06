@@ -2,70 +2,32 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Dashboard de Ahorros</title>
+<title>Dashboard Ahorros PRO MAX</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
-body {
-font-family: Arial;
-background: #f4f6f8;
-margin: 0;
-padding: 20px;
-}
-
-.container {
-max-width: 1000px;
-margin: auto;
-}
-
-.card {
-background: white;
-padding: 20px;
-margin-bottom: 20px;
-border-radius: 10px;
-}
-
-input, select {
-width: 100%;
-padding: 8px;
-margin-top: 5px;
-margin-bottom: 10px;
-}
-
-button {
-padding: 10px;
-width: 100%;
-cursor: pointer;
-}
-
-table {
-width: 100%;
-border-collapse: collapse;
-}
-
-th, td {
-border: 1px solid #ccc;
-padding: 8px;
-text-align: center;
-}
-
-th {
-background: #007bff;
-color: white;
-}
+body { font-family: Arial; background:#f4f6f8; padding:20px;}
+.container { max-width:1200px; margin:auto;}
+.card { background:white; padding:20px; margin-bottom:20px; border-radius:10px;}
+input,select { width:100%; padding:8px; margin:5px 0;}
+button { padding:8px; cursor:pointer; margin-top:5px;}
+table { width:100%; border-collapse:collapse;}
+th,td { border:1px solid #ccc; padding:8px; text-align:center;}
+th { background:#007bff; color:white;}
+.kpis { display:flex; gap:20px;}
+.kpi { flex:1; background:#e9f5ff; padding:15px; border-radius:10px; text-align:center;}
+canvas { margin-top:20px;}
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
-<h2>📊 Dashboard de Ahorros</h2>
+<h2>📊 Dashboard Ahorros PRO MAX</h2>
 
 <div class="card">
-<h3>Registrar ahorro</h3>
-
 <input id="proyecto" placeholder="Proyecto">
 <input id="responsable" placeholder="Responsable">
 
@@ -76,6 +38,7 @@ color: white;
 <option>Proveedor</option>
 </select>
 
+<input type="date" id="fecha">
 <input type="number" id="original" placeholder="Costo original">
 <input type="number" id="optimizado" placeholder="Costo optimizado">
 
@@ -83,23 +46,37 @@ color: white;
 </div>
 
 <div class="card">
-<h3>Filtro por proyecto</h3>
-<select id="filtro" onchange="cargar()">
-<option value="todos">Todos</option>
+<select id="filtroProyecto" onchange="cargar()">
+<option value="todos">Todos los proyectos</option>
 </select>
+
+<input type="date" id="filtroInicio" onchange="cargar()">
+<input type="date" id="filtroFin" onchange="cargar()">
+
+<button onclick="exportarExcel()">Exportar a Excel</button>
+</div>
+
+<div class="card kpis">
+<div class="kpi"><h3>Total Original</h3><p id="kpiOriginal">0</p></div>
+<div class="kpi"><h3>Total Ahorro</h3><p id="kpiAhorro">0</p></div>
+<div class="kpi"><h3>% Ahorro</h3><p id="kpiPorcentaje">0%</p></div>
 </div>
 
 <div class="card">
-<h3>Gráfica de ahorros</h3>
-<canvas id="chart"></canvas>
+<h3>Gráfica General</h3>
+<canvas id="chartGeneral"></canvas>
 </div>
 
 <div class="card">
-<h3>Registros</h3>
+<h3>Gráfica por Proyecto</h3>
+<canvas id="chartProyecto"></canvas>
+</div>
 
+<div class="card">
 <table>
 <thead>
 <tr>
+<th>Fecha</th>
 <th>Proyecto</th>
 <th>Responsable</th>
 <th>Tipo</th>
@@ -111,7 +88,6 @@ color: white;
 </thead>
 <tbody id="tabla"></tbody>
 </table>
-
 </div>
 
 </div>
@@ -119,18 +95,9 @@ color: white;
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import {
-getFirestore,
-collection,
-addDoc,
-getDocs,
-doc,
-deleteDoc,
-updateDoc,
-getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, getDoc }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// 🔥 FIREBASE CONFIG
 const firebaseConfig = {
 apiKey: "AIzaSyDbGafoJEyBDRu3CUNErYWWMiTTopFSw4Y",
 authDomain: "dashboard-ahorros.firebaseapp.com",
@@ -143,75 +110,70 @@ appId: "1:182706196966:web:582eb05fe372327f720627"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let editId = null;
+let editId=null;
+let datosGlobal=[];
 
-// ================= GUARDAR =================
-window.guardar = async function () {
+// GUARDAR
+window.guardar=async()=>{
+let data={
+proyecto:proyecto.value,
+responsable:responsable.value,
+tipo:tipo.value,
+fecha:fecha.value,
+original:parseFloat(original.value),
+optimizado:parseFloat(optimizado.value)
+};
 
-let p = proyecto.value;
-let r = responsable.value;
-let t = tipo.value;
-let o = parseFloat(original.value);
-let op = parseFloat(optimizado.value);
+if(!data.proyecto||!data.responsable||!data.fecha) return alert("Faltan datos");
 
-if (!p || !r || isNaN(o) || isNaN(op)) {
-alert("Completa todos los campos");
-return;
-}
+data.ahorro=data.original-data.optimizado;
 
-let ahorro = o - op;
-
-if (editId) {
-
-await updateDoc(doc(db, "ahorros", editId), {
-proyecto: p,
-responsable: r,
-tipo: t,
-original: o,
-optimizado: op,
-ahorro
-});
-
-editId = null;
-
-} else {
-
-await addDoc(collection(db, "ahorros"), {
-proyecto: p,
-responsable: r,
-tipo: t,
-original: o,
-optimizado: op,
-ahorro
-});
-
+if(editId){
+await updateDoc(doc(db,"ahorros",editId),data);
+editId=null;
+}else{
+await addDoc(collection(db,"ahorros"),data);
 }
 
 limpiar();
 cargar();
 };
 
-// ================= CARGAR =================
-window.cargar = async function () {
+// CARGAR
+window.cargar=async()=>{
+let snapshot=await getDocs(collection(db,"ahorros"));
+let tabla=document.getElementById("tabla");
+tabla.innerHTML="";
 
-let snapshot = await getDocs(collection(db, "ahorros"));
+let totalOriginal=0,totalAhorro=0;
+let proyectos=new Set();
+let ahorroPorProyecto={};
 
-let tabla = document.getElementById("tabla");
-tabla.innerHTML = "";
+let fProyecto=filtroProyecto.value;
+let fInicio=filtroInicio.value;
+let fFin=filtroFin.value;
 
-let total = 0;
-let proyectos = new Set();
+datosGlobal=[];
 
-snapshot.forEach(docu => {
-
-let d = docu.data();
-
+snapshot.forEach(docu=>{
+let d=docu.data();
 proyectos.add(d.proyecto);
 
-total += d.ahorro;
+// filtros
+if(fProyecto!=="todos" && d.proyecto!==fProyecto) return;
+if(fInicio && d.fecha<fInicio) return;
+if(fFin && d.fecha>fFin) return;
 
-tabla.innerHTML += `
+datosGlobal.push(d);
+
+totalOriginal+=d.original;
+totalAhorro+=d.ahorro;
+
+ahorroPorProyecto[d.proyecto]=(ahorroPorProyecto[d.proyecto]||0)+d.ahorro;
+
+tabla.innerHTML+=`
 <tr>
+<td>${d.fecha}</td>
 <td>${d.proyecto}</td>
 <td>${d.responsable}</td>
 <td>${d.tipo}</td>
@@ -222,73 +184,84 @@ tabla.innerHTML += `
 <button onclick="editar('${docu.id}')">Editar</button>
 <button onclick="eliminar('${docu.id}')">Eliminar</button>
 </td>
-</tr>
-`;
+</tr>`;
 });
 
-// filtro dinámico
-let filtro = document.getElementById("filtro");
-filtro.innerHTML = `<option value="todos">Todos</option>`;
-proyectos.forEach(p => {
-filtro.innerHTML += `<option>${p}</option>`;
-});
+// KPIs
+kpiOriginal.innerText=totalOriginal;
+kpiAhorro.innerText=totalAhorro;
+kpiPorcentaje.innerText= totalOriginal?((totalAhorro/totalOriginal)*100).toFixed(2)+"%":0;
 
-// gráfica
-renderChart(total);
+// filtro proyectos
+filtroProyecto.innerHTML='<option value="todos">Todos</option>';
+proyectos.forEach(p=>filtroProyecto.innerHTML+=`<option>${p}</option>`);
 
+// graficas
+renderGeneral(totalOriginal,totalAhorro);
+renderProyecto(ahorroPorProyecto);
 };
 
-// ================= GRAFICA =================
-function renderChart(total) {
-
-if (window.chart) window.chart.destroy();
-
-window.chart = new Chart(document.getElementById("chart"), {
-type: "bar",
-data: {
-labels: ["Ahorro Total"],
-datasets: [{
-label: "Ahorro",
-data: [total],
-backgroundColor: "green"
-}]
-}
+// GRAFICA GENERAL
+function renderGeneral(o,a){
+if(window.chart1) chart1.destroy();
+window.chart1=new Chart(chartGeneral,{
+type:"bar",
+data:{labels:["Original","Ahorro"],datasets:[{data:[o,a],backgroundColor:["red","green"]}]}
 });
-
 }
 
-// ================= ELIMINAR =================
-window.eliminar = async function (id) {
-await deleteDoc(doc(db, "ahorros", id));
+// GRAFICA POR PROYECTO
+function renderProyecto(data){
+if(window.chart2) chart2.destroy();
+
+let labels=Object.keys(data);
+let valores=Object.values(data);
+
+window.chart2=new Chart(chartProyecto,{
+type:"bar",
+data:{labels:labels,datasets:[{label:"Ahorro por proyecto",data:valores}]}
+});
+}
+
+// EXPORTAR
+window.exportarExcel=()=>{
+let ws=XLSX.utils.json_to_sheet(datosGlobal);
+let wb=XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb,ws,"Ahorros");
+XLSX.writeFile(wb,"ahorros.xlsx");
+};
+
+// EDITAR
+window.editar=async(id)=>{
+let docSnap=await getDoc(doc(db,"ahorros",id));
+let d=docSnap.data();
+
+proyecto.value=d.proyecto;
+responsable.value=d.responsable;
+tipo.value=d.tipo;
+fecha.value=d.fecha;
+original.value=d.original;
+optimizado.value=d.optimizado;
+
+editId=id;
+};
+
+// ELIMINAR
+window.eliminar=async(id)=>{
+await deleteDoc(doc(db,"ahorros",id));
 cargar();
 };
 
-// ================= EDITAR =================
-window.editar = async function (id) {
-
-let docSnap = await getDoc(doc(db, "ahorros", id));
-let d = docSnap.data();
-
-proyecto.value = d.proyecto;
-responsable.value = d.responsable;
-tipo.value = d.tipo;
-original.value = d.original;
-optimizado.value = d.optimizado;
-
-editId = id;
-};
-
-// ================= LIMPIAR =================
-function limpiar() {
-proyecto.value = "";
-responsable.value = "";
-original.value = "";
-optimizado.value = "";
+function limpiar(){
+proyecto.value="";
+responsable.value="";
+original.value="";
+optimizado.value="";
+fecha.value="";
 }
 
 cargar();
 
 </script>
-
 </body>
 </html>
