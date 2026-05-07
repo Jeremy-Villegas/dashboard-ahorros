@@ -182,7 +182,7 @@ Dashboard de Ahorros
 <textarea id="descripcion"
 placeholder="Descripción del ahorro o justificación"></textarea>
 
-<input type="file" id="evidencia">
+<input type="file" id="evidencia" multiple>
 
 <input type="date" id="fecha">
 
@@ -276,7 +276,7 @@ Exportar a Excel
 <th>Unidad</th>
 <th>Tipo</th>
 <th>Descripción</th>
-<th>Evidencia</th>
+<th>Evidencias</th>
 <th>Original</th>
 <th>Optimizado</th>
 <th>Ahorro</th>
@@ -336,9 +336,11 @@ responsable:responsable.value,
 unidad:unidad.value,
 tipo:tipo.value,
 descripcion:descripcion.value,
-evidencia:evidencia.files[0]
-? evidencia.files[0].name
-: "",
+
+evidencia:[...evidencia.files]
+.map(f=>f.name)
+.join(", "),
+
 fecha:fecha.value,
 original:parseFloat(original.value),
 optimizado:parseFloat(optimizado.value)
