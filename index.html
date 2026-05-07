@@ -28,7 +28,7 @@ align-items: center;
 
 /* CONTENEDOR */
 .container {
-max-width: 1300px;
+max-width: 1400px;
 margin: 20px auto;
 padding: 20px;
 background: #f9fafb;
@@ -36,8 +36,15 @@ border-radius: 10px;
 }
 
 /* TITULOS */
-h2 { color: #1f2937; margin-bottom: 15px; }
-h3 { color: #374151; margin-bottom: 10px; }
+h2 {
+color: #1f2937;
+margin-bottom: 15px;
+}
+
+h3 {
+color: #374151;
+margin-bottom: 10px;
+}
 
 /* CARDS */
 .card {
@@ -50,13 +57,14 @@ box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 /* INPUTS */
-input, select {
+input, select, textarea {
 width: 100%;
 padding: 10px;
 margin: 6px 0;
 border-radius: 6px;
 border: 1px solid #cfd4da;
 background: #f9fafb;
+box-sizing: border-box;
 }
 
 /* BOTONES */
@@ -111,23 +119,31 @@ td {
 padding: 8px;
 border-bottom: 1px solid #e5e7eb;
 font-size: 13px;
+vertical-align: top;
 }
 
 tr:hover {
 background: #f5f7fa;
 }
 
-/* BOTONES ACCIONES */
+/* BOTONES TABLA */
 td button {
 margin: 2px;
 padding: 5px 8px;
 font-size: 12px;
 }
 
-td button:nth-child(1) { background: #3498db; }
-td button:nth-child(2) { background: #e74c3c; }
+td button:nth-child(1) {
+background: #3498db;
+}
 
-canvas { margin-top: 15px; }
+td button:nth-child(2) {
+background: #e74c3c;
+}
+
+canvas {
+margin-top: 15px;
+}
 </style>
 </head>
 
@@ -142,9 +158,17 @@ Dashboard de Ahorros
 
 <h2>📊 Dashboard Ahorros PRO MAX</h2>
 
+<!-- FORMULARIO -->
 <div class="card">
+
 <input id="proyecto" placeholder="Proyecto">
+
 <input id="responsable" placeholder="Responsable">
+
+<select id="unidad">
+<option value="F&P">F&P</option>
+<option value="INST">INST</option>
+</select>
 
 <select id="tipo">
 <option>Material</option>
@@ -153,64 +177,120 @@ Dashboard de Ahorros
 <option>Proveedor</option>
 </select>
 
+<textarea id="descripcion"
+placeholder="Descripción del ahorro o justificación"></textarea>
+
+<input type="file" id="evidencia">
+
 <input type="date" id="fecha">
-<input type="number" id="original" placeholder="Costo original">
-<input type="number" id="optimizado" placeholder="Costo optimizado">
+
+<input type="number" id="original"
+placeholder="Costo original">
+
+<input type="number" id="optimizado"
+placeholder="Costo optimizado">
 
 <button onclick="guardar()">Guardar</button>
+
 </div>
 
+<!-- FILTROS -->
 <div class="card">
+
 <select id="filtroProyecto" onchange="cargar()">
 <option value="todos">Todos los proyectos</option>
 </select>
 
+<select id="filtroResponsable" onchange="cargar()">
+<option value="todos">Todos los responsables</option>
+</select>
+
 <input type="date" id="filtroInicio" onchange="cargar()">
+
 <input type="date" id="filtroFin" onchange="cargar()">
 
-<button onclick="exportarExcel()">Exportar a Excel</button>
+<button onclick="exportarExcel()">
+Exportar a Excel
+</button>
+
 </div>
 
+<!-- KPIs -->
 <div class="card kpis">
-<div class="kpi orange"><h3>Total Original</h3><p id="kpiOriginal">0</p></div>
-<div class="kpi blue"><h3>Total Ahorro</h3><p id="kpiAhorro">0</p></div>
-<div class="kpi green"><h3>% Ahorro</h3><p id="kpiPorcentaje">0%</p></div>
+
+<div class="kpi orange">
+<h3>Total Original</h3>
+<p id="kpiOriginal">0</p>
 </div>
 
+<div class="kpi blue">
+<h3>Total Ahorro</h3>
+<p id="kpiAhorro">0</p>
+</div>
+
+<div class="kpi green">
+<h3>% Ahorro</h3>
+<p id="kpiPorcentaje">0%</p>
+</div>
+
+</div>
+
+<!-- GRAFICA GENERAL -->
 <div class="card">
 <h3>Gráfica General</h3>
 <canvas id="chartGeneral"></canvas>
 </div>
 
+<!-- GRAFICA PROYECTO -->
 <div class="card">
 <h3>Gráfica por Proyecto</h3>
 <canvas id="chartProyecto"></canvas>
 </div>
 
+<!-- TABLA -->
 <div class="card">
+
 <table>
+
 <thead>
 <tr>
 <th>Fecha</th>
 <th>Proyecto</th>
 <th>Responsable</th>
+<th>Unidad</th>
 <th>Tipo</th>
+<th>Descripción</th>
+<th>Evidencia</th>
 <th>Original</th>
 <th>Optimizado</th>
 <th>Ahorro</th>
 <th>Acciones</th>
 </tr>
 </thead>
+
 <tbody id="tabla"></tbody>
+
 </table>
+
 </div>
 
 </div>
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, getDoc }
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs,
+doc,
+deleteDoc,
+updateDoc,
+getDoc
+}
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -225,145 +305,329 @@ appId: "1:182706196966:web:582eb05fe372327f720627"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let editId=null;
-let datosGlobal=[];
+let editId = null;
+let datosGlobal = [];
 
-window.guardar=async()=>{
-let data={
-proyecto:proyecto.value,
-responsable:responsable.value,
-tipo:tipo.value,
-fecha:fecha.value,
-original:parseFloat(original.value),
-optimizado:parseFloat(optimizado.value)
+/* GUARDAR */
+window.guardar = async () => {
+
+let data = {
+
+proyecto: proyecto.value,
+responsable: responsable.value,
+unidad: unidad.value,
+tipo: tipo.value,
+descripcion: descripcion.value,
+evidencia: evidencia.files[0]
+? evidencia.files[0].name
+: "",
+fecha: fecha.value,
+original: parseFloat(original.value),
+optimizado: parseFloat(optimizado.value)
+
 };
 
-if(!data.proyecto||!data.responsable||!data.fecha) return alert("Faltan datos");
+if(!data.proyecto ||
+!data.responsable ||
+!data.fecha) {
 
-data.ahorro=data.original-data.optimizado;
+return alert("Faltan datos");
+
+}
+
+data.ahorro =
+data.original - data.optimizado;
 
 if(editId){
-await updateDoc(doc(db,"ahorros",editId),data);
-editId=null;
+
+await updateDoc(
+doc(db,"ahorros",editId),
+data
+);
+
+editId = null;
+
 }else{
-await addDoc(collection(db,"ahorros"),data);
+
+await addDoc(
+collection(db,"ahorros"),
+data
+);
+
 }
 
 limpiar();
 cargar();
+
 };
 
-window.cargar=async()=>{
-let snapshot=await getDocs(collection(db,"ahorros"));
-tabla.innerHTML="";
+/* CARGAR */
+window.cargar = async () => {
 
-let totalOriginal=0,totalAhorro=0;
-let proyectos=new Set();
-let ahorroPorProyecto={};
+let snapshot =
+await getDocs(collection(db,"ahorros"));
 
-let fProyecto=filtroProyecto.value;
-let fInicio=filtroInicio.value;
-let fFin=filtroFin.value;
+tabla.innerHTML = "";
 
-datosGlobal=[];
+let totalOriginal = 0;
+let totalAhorro = 0;
+
+let proyectos = new Set();
+let responsables = new Set();
+
+let ahorroPorProyecto = {};
+
+let fProyecto =
+filtroProyecto.value;
+
+let fResponsable =
+filtroResponsable.value;
+
+let fInicio =
+filtroInicio.value;
+
+let fFin =
+filtroFin.value;
+
+datosGlobal = [];
 
 snapshot.forEach(docu=>{
-let d=docu.data();
-proyectos.add(d.proyecto);
 
-if(fProyecto!=="todos" && d.proyecto!==fProyecto) return;
-if(fInicio && d.fecha<fInicio) return;
-if(fFin && d.fecha>fFin) return;
+let d = docu.data();
+
+proyectos.add(d.proyecto);
+responsables.add(d.responsable);
+
+/* FILTROS */
+if(fProyecto !== "todos"
+&& d.proyecto !== fProyecto)
+return;
+
+if(fResponsable !== "todos"
+&& d.responsable !== fResponsable)
+return;
+
+if(fInicio && d.fecha < fInicio)
+return;
+
+if(fFin && d.fecha > fFin)
+return;
 
 datosGlobal.push(d);
 
-totalOriginal+=d.original;
-totalAhorro+=d.ahorro;
+totalOriginal += d.original;
+totalAhorro += d.ahorro;
 
-ahorroPorProyecto[d.proyecto]=(ahorroPorProyecto[d.proyecto]||0)+d.ahorro;
+ahorroPorProyecto[d.proyecto] =
+(ahorroPorProyecto[d.proyecto] || 0)
++ d.ahorro;
 
-tabla.innerHTML+=`
+tabla.innerHTML += `
 <tr>
+
 <td>${d.fecha}</td>
+
 <td>${d.proyecto}</td>
+
 <td>${d.responsable}</td>
+
+<td>${d.unidad || ""}</td>
+
 <td>${d.tipo}</td>
+
+<td>${d.descripcion || ""}</td>
+
+<td>${d.evidencia || ""}</td>
+
 <td>${d.original}</td>
+
 <td>${d.optimizado}</td>
+
 <td>${d.ahorro}</td>
+
 <td>
-<button onclick="editar('${docu.id}')">Editar</button>
-<button onclick="eliminar('${docu.id}')">Eliminar</button>
+<button onclick="editar('${docu.id}')">
+Editar
+</button>
+
+<button onclick="eliminar('${docu.id}')">
+Eliminar
+</button>
 </td>
-</tr>`;
+
+</tr>
+`;
+
 });
 
-kpiOriginal.innerText=totalOriginal;
-kpiAhorro.innerText=totalAhorro;
-kpiPorcentaje.innerText= totalOriginal?((totalAhorro/totalOriginal)*100).toFixed(2)+"%":0;
+/* KPIs */
+kpiOriginal.innerText =
+totalOriginal;
 
-filtroProyecto.innerHTML='<option value="todos">Todos</option>';
-proyectos.forEach(p=>filtroProyecto.innerHTML+=`<option>${p}</option>`);
+kpiAhorro.innerText =
+totalAhorro;
 
-renderGeneral(totalOriginal,totalAhorro);
-renderProyecto(ahorroPorProyecto);
+kpiPorcentaje.innerText =
+totalOriginal
+? ((totalAhorro / totalOriginal)
+* 100).toFixed(2) + "%"
+: "0%";
+
+/* FILTROS */
+filtroProyecto.innerHTML =
+'<option value="todos">Todos los proyectos</option>';
+
+proyectos.forEach(p=>{
+
+filtroProyecto.innerHTML +=
+`<option>${p}</option>`;
+
+});
+
+filtroResponsable.innerHTML =
+'<option value="todos">Todos los responsables</option>';
+
+responsables.forEach(r=>{
+
+filtroResponsable.innerHTML +=
+`<option>${r}</option>`;
+
+});
+
+/* GRAFICAS */
+renderGeneral(
+totalOriginal,
+totalAhorro
+);
+
+renderProyecto(
+ahorroPorProyecto
+);
+
 };
 
+/* GRAFICA GENERAL */
 function renderGeneral(o,a){
-if(window.chart1) chart1.destroy();
-window.chart1=new Chart(chartGeneral,{
+
+if(window.chart1)
+chart1.destroy();
+
+window.chart1 =
+new Chart(chartGeneral,{
+
 type:"bar",
-data:{labels:["Original","Ahorro"],datasets:[{data:[o,a],backgroundColor:["#ff6a00","#2ecc71"]}]}
-});
+
+data:{
+labels:["Original","Ahorro"],
+
+datasets:[{
+data:[o,a],
+backgroundColor:[
+"#ff6a00",
+"#2ecc71"
+]
+}]
 }
 
+});
+
+}
+
+/* GRAFICA PROYECTO */
 function renderProyecto(data){
-if(window.chart2) chart2.destroy();
-chart2=new Chart(chartProyecto,{
+
+if(window.chart2)
+chart2.destroy();
+
+window.chart2 =
+new Chart(chartProyecto,{
+
 type:"bar",
+
 data:{
 labels:Object.keys(data),
-datasets:[{data:Object.values(data),backgroundColor:"#2d7ff9"}]
+
+datasets:[{
+label:"Ahorro por proyecto",
+data:Object.values(data),
+backgroundColor:"#2d7ff9"
+}]
 }
+
 });
+
 }
 
-window.exportarExcel=()=>{
-let ws=XLSX.utils.json_to_sheet(datosGlobal);
-let wb=XLSX.utils.book_new();
-XLSX.utils.book_append_sheet(wb,ws,"Ahorros");
-XLSX.writeFile(wb,"ahorros.xlsx");
+/* EXPORTAR */
+window.exportarExcel = ()=>{
+
+let ws =
+XLSX.utils.json_to_sheet(datosGlobal);
+
+let wb =
+XLSX.utils.book_new();
+
+XLSX.utils.book_append_sheet(
+wb,
+ws,
+"Ahorros"
+);
+
+XLSX.writeFile(
+wb,
+"ahorros.xlsx"
+);
+
 };
 
-window.editar=async(id)=>{
-let docSnap=await getDoc(doc(db,"ahorros",id));
-let d=docSnap.data();
+/* EDITAR */
+window.editar = async(id)=>{
 
-proyecto.value=d.proyecto;
-responsable.value=d.responsable;
-tipo.value=d.tipo;
-fecha.value=d.fecha;
-original.value=d.original;
-optimizado.value=d.optimizado;
+let docSnap =
+await getDoc(doc(db,"ahorros",id));
 
-editId=id;
+let d = docSnap.data();
+
+proyecto.value = d.proyecto;
+responsable.value = d.responsable;
+unidad.value = d.unidad;
+tipo.value = d.tipo;
+descripcion.value = d.descripcion;
+fecha.value = d.fecha;
+original.value = d.original;
+optimizado.value = d.optimizado;
+
+editId = id;
+
 };
 
-window.eliminar=async(id)=>{
-await deleteDoc(doc(db,"ahorros",id));
+/* ELIMINAR */
+window.eliminar = async(id)=>{
+
+await deleteDoc(
+doc(db,"ahorros",id)
+);
+
 cargar();
+
 };
 
+/* LIMPIAR */
 function limpiar(){
-proyecto.value="";
-responsable.value="";
-original.value="";
-optimizado.value="";
-fecha.value="";
+
+proyecto.value = "";
+responsable.value = "";
+descripcion.value = "";
+original.value = "";
+optimizado.value = "";
+fecha.value = "";
+
 }
 
+/* INICIO */
 cargar();
 
 </script>
+
 </body>
 </html>
