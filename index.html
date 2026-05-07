@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+
 <meta charset="UTF-8">
-<title>Dashboard Ahorros PRO MAX</title>
+
+<title>Dashboard Ahorros FLUTEC PRO MAX</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 
@@ -20,50 +25,46 @@ color:#2c3e50;
 background:#1f2937;
 color:white;
 padding:15px 25px;
-font-weight:bold;
 display:flex;
 justify-content:space-between;
 align-items:center;
 }
 
 .container{
-max-width:1400px;
+max-width:1500px;
 margin:20px auto;
 padding:20px;
-background:#f9fafb;
-border-radius:10px;
 }
 
 .card{
-background:#ffffff;
+background:white;
 padding:20px;
 margin-bottom:20px;
-border-radius:8px;
-border:1px solid #d1d5db;
-box-shadow:0 2px 6px rgba(0,0,0,0.05);
+border-radius:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 
 input,select,textarea{
 width:100%;
 padding:10px;
-margin:6px 0;
+margin-top:8px;
 border-radius:6px;
-border:1px solid #cfd4da;
-background:#f9fafb;
+border:1px solid #d1d5db;
 box-sizing:border-box;
 }
 
 button{
-background:#2d7ff9;
+background:#ff6a00;
 color:white;
 border:none;
-padding:8px 12px;
+padding:10px 15px;
 border-radius:6px;
 cursor:pointer;
+margin-top:10px;
 }
 
 button:hover{
-background:#1c5fd4;
+opacity:0.9;
 }
 
 .btn-danger{
@@ -78,11 +79,10 @@ flex-wrap:wrap;
 
 .kpi{
 flex:1;
-padding:15px;
-border-radius:8px;
-text-align:center;
+padding:20px;
+border-radius:10px;
 color:white;
-font-weight:bold;
+text-align:center;
 }
 
 .orange{
@@ -90,11 +90,22 @@ background:#ff6a00;
 }
 
 .blue{
-background:#2d7ff9;
+background:#2563eb;
 }
 
 .green{
-background:#2ecc71;
+background:#16a34a;
+}
+
+.kpi-big{
+background:linear-gradient(90deg,#ff6a00,#ff8c00);
+color:white;
+padding:30px;
+font-size:40px;
+font-weight:bold;
+text-align:center;
+border-radius:12px;
+margin-bottom:20px;
 }
 
 table{
@@ -106,6 +117,7 @@ th{
 background:#1f2937;
 color:white;
 padding:10px;
+cursor:pointer;
 }
 
 td{
@@ -115,49 +127,139 @@ font-size:13px;
 vertical-align:top;
 }
 
+.link-archivo{
+display:block;
+font-size:12px;
+margin-bottom:5px;
+color:#2563eb;
+text-decoration:none;
+}
+
 .archivo-item{
 display:flex;
 justify-content:space-between;
-align-items:center;
 background:#f3f4f6;
 padding:8px;
-margin-top:5px;
 border-radius:6px;
+margin-top:5px;
 }
 
-.archivo-item button{
-background:#e74c3c;
+.toast{
+position:fixed;
+top:20px;
+right:20px;
+background:#16a34a;
+color:white;
+padding:15px;
+border-radius:10px;
+display:none;
+z-index:9999;
+}
+
+.dark{
+background:#111827;
+color:white;
+}
+
+.dark .card{
+background:#1f2937;
+color:white;
+}
+
+.dark input,
+.dark select,
+.dark textarea{
+background:#111827;
+color:white;
+border:1px solid #4b5563;
+}
+
+.dark table{
+color:white;
+}
+
+.badge{
 padding:5px 10px;
+border-radius:20px;
 font-size:12px;
+color:white;
+font-weight:bold;
 }
 
-.link-archivo{
-display:block;
-margin-bottom:4px;
-color:#2563eb;
-text-decoration:none;
-font-size:12px;
+.badge-propuesto{
+background:#2563eb;
 }
 
-.link-archivo:hover{
-text-decoration:underline;
+.badge-revision{
+background:#f59e0b;
+}
+
+.badge-aprobado{
+background:#16a34a;
+}
+
+.badge-implementado{
+background:#7c3aed;
+}
+
+.galeria img{
+width:70px;
+height:70px;
+object-fit:cover;
+border-radius:8px;
+margin:3px;
 }
 
 </style>
+
 </head>
 
 <body>
 
 <div class="header">
+
+<div style="display:flex;align-items:center;gap:15px;">
+
+<img src="https://i.imgur.com/Qs7K8QH.png"
+style="height:55px;background:white;padding:5px;border-radius:8px;">
+
+<div>
+
+<div style="font-size:22px;font-weight:bold;">
 Dashboard de Ahorros
-<span>Jeremy Villegas</span>
+</div>
+
+<div style="font-size:12px;opacity:.8;">
+FLUTEC PRO MAX
+</div>
+
+</div>
+
+</div>
+
+<div>
+
+<button onclick="toggleDarkMode()">
+🌙 Dark Mode
+</button>
+
+</div>
+
 </div>
 
 <div class="container">
 
 <h2>📊 Dashboard Ahorros PRO MAX</h2>
 
-<!-- FORM -->
+<div class="kpi-big">
+
+💰 AHORRO TOTAL ANUAL
+
+<br>
+
+<span id="ahorroAnual">$0</span>
+
+</div>
 
 <div class="card">
 
@@ -166,8 +268,8 @@ Dashboard de Ahorros
 <input id="responsable" placeholder="Responsable">
 
 <select id="unidad">
-<option value="F&P">F&P</option>
-<option value="INST">INST</option>
+<option>F&P</option>
+<option>INST</option>
 </select>
 
 <select id="tipo">
@@ -177,8 +279,18 @@ Dashboard de Ahorros
 <option>Proveedor</option>
 </select>
 
+<select id="estatus">
+<option>Propuesto</option>
+<option>En revisión</option>
+<option>Aprobado</option>
+<option>Implementado</option>
+</select>
+
 <textarea id="descripcion"
 placeholder="Descripción del ahorro"></textarea>
+
+<textarea id="comentarios"
+placeholder="Comentarios adicionales"></textarea>
 
 <label><b>Evidencias</b></label>
 
@@ -188,7 +300,9 @@ multiple>
 
 <button type="button"
 onclick="agregarArchivo()">
+
 Agregar Archivo
+
 </button>
 
 <div id="listaArchivos"></div>
@@ -209,22 +323,29 @@ Guardar
 
 </div>
 
-<!-- FILTROS -->
-
 <div class="card">
+
+<input
+id="busquedaRapida"
+placeholder="Buscar proyecto, responsable o descripción..."
+onkeyup="cargar()">
 
 <select id="filtroProyecto"
 onchange="cargar()">
+
 <option value="todos">
 Todos los proyectos
 </option>
+
 </select>
 
 <select id="filtroResponsable"
 onchange="cargar()">
+
 <option value="todos">
 Todos los responsables
 </option>
+
 </select>
 
 <select id="filtroUnidad"
@@ -234,13 +355,9 @@ onchange="cargar()">
 Todas las unidades
 </option>
 
-<option value="F&P">
-F&P
-</option>
+<option>F&P</option>
 
-<option value="INST">
-INST
-</option>
+<option>INST</option>
 
 </select>
 
@@ -251,21 +368,13 @@ onchange="cargar()">
 Todos los tipos
 </option>
 
-<option value="Material">
-Material
-</option>
+<option>Material</option>
 
-<option value="Mano de obra">
-Mano de obra
-</option>
+<option>Mano de obra</option>
 
-<option value="Tiempo">
-Tiempo
-</option>
+<option>Tiempo</option>
 
-<option value="Proveedor">
-Proveedor
-</option>
+<option>Proveedor</option>
 
 </select>
 
@@ -281,42 +390,71 @@ onchange="cargar()">
 Exportar Excel
 </button>
 
-</div>
+<button onclick="exportarPDF()">
+Exportar PDF
+</button>
 
-<!-- KPIS -->
+</div>
 
 <div class="card kpis">
 
 <div class="kpi orange">
+
 <h3>Total Original</h3>
+
 <p id="kpiOriginal">0</p>
+
 </div>
 
 <div class="kpi blue">
+
 <h3>Total Ahorro</h3>
+
 <p id="kpiAhorro">0</p>
+
 </div>
 
 <div class="kpi green">
+
 <h3>% Ahorro</h3>
+
 <p id="kpiPorcentaje">0%</p>
-</div>
 
 </div>
 
-<!-- GRAFICAS -->
+</div>
 
 <div class="card">
+
 <h3>Gráfica General</h3>
+
 <canvas id="chartGeneral"></canvas>
+
 </div>
 
 <div class="card">
+
 <h3>Gráfica por Proyecto</h3>
+
 <canvas id="chartProyecto"></canvas>
+
 </div>
 
-<!-- TABLA -->
+<div class="card">
+
+<h3>Gráfica Mensual</h3>
+
+<canvas id="chartMensual"></canvas>
+
+</div>
+
+<div class="card">
+
+<h3>Top Responsables</h3>
+
+<div id="topResponsables"></div>
+
+</div>
 
 <div class="card">
 
@@ -327,15 +465,33 @@ Exportar Excel
 <tr>
 
 <th>Fecha</th>
+
 <th>Proyecto</th>
+
 <th>Responsable</th>
+
 <th>Unidad</th>
+
 <th>Tipo</th>
+
+<th>Estatus</th>
+
 <th>Descripción</th>
+
 <th>Evidencias</th>
-<th>Original</th>
-<th>Optimizado</th>
-<th>Ahorro</th>
+
+<th onclick="ordenar('original')">
+Original
+</th>
+
+<th onclick="ordenar('optimizado')">
+Optimizado
+</th>
+
+<th onclick="ordenar('ahorro')">
+Ahorro
+</th>
+
 <th>Acciones</th>
 
 </tr>
@@ -349,6 +505,8 @@ Exportar Excel
 </div>
 
 </div>
+
+<div id="toast" class="toast"></div>
 
 <script type="module">
 
@@ -401,11 +559,31 @@ let datosGlobal=[];
 
 let archivosEvidencia=[];
 
-/* AGREGAR ARCHIVOS */
+let ordenActual="";
+
+function mostrarToast(msg){
+
+let t=document.getElementById("toast");
+
+t.innerText=msg;
+
+t.style.display="block";
+
+setTimeout(()=>{
+t.style.display="none";
+},3000);
+
+}
+
+window.toggleDarkMode=()=>{
+
+document.body.classList.toggle("dark");
+
+};
 
 window.agregarArchivo=()=>{
 
-let input =
+let input=
 document.getElementById("evidencia");
 
 if(!input.files.length){
@@ -416,24 +594,21 @@ return;
 
 }
 
-let nuevosArchivos =
-Array.from(input.files);
+Array.from(input.files).forEach(file=>{
 
-nuevosArchivos.forEach(archivo=>{
-
-let existe =
+let existe=
 archivosEvidencia.some(
-a => a.nombre === archivo.name
+a=>a.nombre===file.name
 );
 
 if(!existe){
 
-let url =
-URL.createObjectURL(archivo);
-
 archivosEvidencia.push({
-nombre: archivo.name,
-url:url
+
+nombre:file.name,
+
+url:URL.createObjectURL(file)
+
 });
 
 }
@@ -446,23 +621,17 @@ input.value="";
 
 };
 
-/* RENDER ARCHIVOS */
-
 function renderArchivos(){
 
-let contenedor =
-document.getElementById("listaArchivos");
-
-contenedor.innerHTML="";
+listaArchivos.innerHTML="";
 
 archivosEvidencia.forEach((a,index)=>{
 
-contenedor.innerHTML += `
+listaArchivos.innerHTML+=`
 
 <div class="archivo-item">
 
-<a
-class="link-archivo"
+<a class="link-archivo"
 href="${a.url}"
 target="_blank">
 
@@ -471,7 +640,6 @@ ${a.nombre}
 </a>
 
 <button
-type="button"
 onclick="eliminarArchivo(${index})">
 
 X
@@ -486,13 +654,11 @@ X
 
 }
 
-/* ELIMINAR ARCHIVO */
-
 window.eliminarArchivo=(index)=>{
 
-let confirmar =
+let confirmar=
 confirm(
-"¿Seguro que deseas eliminar este archivo?"
+"¿Eliminar este archivo?"
 );
 
 if(!confirmar) return;
@@ -502,8 +668,6 @@ archivosEvidencia.splice(index,1);
 renderArchivos();
 
 };
-
-/* GUARDAR */
 
 window.guardar=async()=>{
 
@@ -517,7 +681,11 @@ unidad:unidad.value,
 
 tipo:tipo.value,
 
+estatus:estatus.value,
+
 descripcion:descripcion.value,
+
+comentarios:comentarios.value,
 
 evidencia:
 JSON.stringify(archivosEvidencia),
@@ -531,16 +699,6 @@ optimizado:
 parseFloat(optimizado.value)
 
 };
-
-if(!data.proyecto
-|| !data.responsable
-|| !data.fecha){
-
-alert("Faltan datos");
-
-return;
-
-}
 
 data.ahorro=
 data.original-data.optimizado;
@@ -563,17 +721,17 @@ data
 
 }
 
+mostrarToast("Registro guardado");
+
 limpiar();
 
 cargar();
 
 };
 
-/* CARGAR */
-
 window.cargar=async()=>{
 
-let snapshot =
+let snapshot=
 await getDocs(
 collection(db,"ahorros")
 );
@@ -581,31 +739,33 @@ collection(db,"ahorros")
 tabla.innerHTML="";
 
 let totalOriginal=0;
+
 let totalAhorro=0;
 
 let proyectos=new Set();
 
 let responsables=new Set();
 
-let ahorroPorProyecto={};
+let ahorroProyecto={};
 
-let fProyecto =
+let ahorroMensual={};
+
+let top={};
+
+let fProyecto=
 filtroProyecto.value;
 
-let fResponsable =
+let fResponsable=
 filtroResponsable.value;
 
-let fUnidad =
+let fUnidad=
 filtroUnidad.value;
 
-let fTipo =
+let fTipo=
 filtroTipo.value;
 
-let fInicio =
-filtroInicio.value;
-
-let fFin =
-filtroFin.value;
+let busqueda=
+busquedaRapida.value.toLowerCase();
 
 datosGlobal=[];
 
@@ -613,13 +773,16 @@ snapshot.forEach(docu=>{
 
 let d=docu.data();
 
-proyectos.add(d.proyecto);
+let texto=(
 
-responsables.add(
-d.responsable
-);
+(d.proyecto||"")+" "+
+(d.responsable||"")+" "+
+(d.descripcion||"")
 
-/* FILTROS */
+).toLowerCase();
+
+if(busqueda && !texto.includes(busqueda))
+return;
 
 if(fProyecto!=="todos"
 && d.proyecto!==fProyecto)
@@ -637,27 +800,44 @@ if(fTipo!=="todos"
 && d.tipo!==fTipo)
 return;
 
-if(fInicio
-&& d.fecha<fInicio)
-return;
-
-if(fFin
-&& d.fecha>fFin)
-return;
-
 datosGlobal.push(d);
+
+proyectos.add(d.proyecto);
+
+responsables.add(d.responsable);
 
 totalOriginal+=d.original;
 
 totalAhorro+=d.ahorro;
 
-ahorroPorProyecto[d.proyecto]=
-(ahorroPorProyecto[d.proyecto]||0)
+ahorroProyecto[d.proyecto]=
+(ahorroProyecto[d.proyecto]||0)
 +d.ahorro;
 
-/* ARCHIVOS */
+let mes=
+d.fecha.substring(0,7);
 
-let evidenciasHTML="";
+ahorroMensual[mes]=
+(ahorroMensual[mes]||0)
++d.ahorro;
+
+top[d.responsable]=
+(top[d.responsable]||0)
++d.ahorro;
+
+let badge="badge-propuesto";
+
+if(d.estatus==="En revisión")
+badge="badge-revision";
+
+if(d.estatus==="Aprobado")
+badge="badge-aprobado";
+
+if(d.estatus==="Implementado")
+badge="badge-implementado";
+
+let evidenciasHTML=
+'<div class="galeria">';
 
 try{
 
@@ -666,28 +846,31 @@ JSON.parse(d.evidencia);
 
 archivos.forEach(a=>{
 
+if(a.nombre.match(/jpg|png|jpeg/i)){
+
 evidenciasHTML += `
-
-<a
-class="link-archivo"
-href="${a.url}"
-target="_blank">
-
-${a.nombre}
-
+<a href="${a.url}" target="_blank">
+<img src="${a.url}">
 </a>
-
 `;
 
-});
+}else{
 
-}catch{
-
-evidenciasHTML=d.evidencia||"";
+evidenciasHTML += `
+<a class="link-archivo"
+href="${a.url}"
+target="_blank">
+${a.nombre}
+</a>
+`;
 
 }
 
-/* TABLA */
+});
+
+}catch{}
+
+evidenciasHTML+='</div>';
 
 tabla.innerHTML += `
 
@@ -699,11 +882,21 @@ tabla.innerHTML += `
 
 <td>${d.responsable}</td>
 
-<td>${d.unidad||""}</td>
+<td>${d.unidad}</td>
 
 <td>${d.tipo}</td>
 
-<td>${d.descripcion||""}</td>
+<td>
+<span class="badge ${badge}">
+${d.estatus}
+</span>
+</td>
+
+<td>
+${d.descripcion}
+<br>
+<small>${d.comentarios||""}</small>
+</td>
 
 <td>${evidenciasHTML}</td>
 
@@ -717,13 +910,17 @@ tabla.innerHTML += `
 
 <button
 onclick="editar('${docu.id}')">
+
 Editar
+
 </button>
 
 <button
 class="btn-danger"
 onclick="eliminar('${docu.id}')">
+
 Eliminar
+
 </button>
 
 </td>
@@ -734,23 +931,22 @@ Eliminar
 
 });
 
-/* KPIS */
-
 kpiOriginal.innerText=
-totalOriginal;
+totalOriginal.toLocaleString();
 
 kpiAhorro.innerText=
-totalAhorro;
+totalAhorro.toLocaleString();
+
+let porcentaje=
+totalOriginal
+? ((totalAhorro/totalOriginal)*100)
+: 0;
 
 kpiPorcentaje.innerText=
-totalOriginal
-? (
-(totalAhorro/totalOriginal)
-*100
-).toFixed(2)+"%"
-: "0%";
+porcentaje.toFixed(2)+"%";
 
-/* FILTROS */
+ahorroAnual.innerText=
+"$"+totalAhorro.toLocaleString();
 
 filtroProyecto.innerHTML=
 '<option value="todos">Todos los proyectos</option>';
@@ -772,27 +968,44 @@ filtroResponsable.innerHTML +=
 
 });
 
-/* GRAFICAS */
-
 renderGeneral(
 totalOriginal,
 totalAhorro
 );
 
 renderProyecto(
-ahorroPorProyecto
+ahorroProyecto
 );
 
-};
+renderMensual(
+ahorroMensual
+);
 
-/* GRAFICA GENERAL */
+let html="";
+
+Object.entries(top)
+.sort((a,b)=>b[1]-a[1])
+.slice(0,5)
+.forEach(t=>{
+
+html += `
+<div>
+${t[0]} → $${t[1].toLocaleString()}
+</div>
+`;
+
+});
+
+topResponsables.innerHTML=html;
+
+};
 
 function renderGeneral(o,a){
 
 if(window.chart1)
 chart1.destroy();
 
-window.chart1 =
+window.chart1=
 new Chart(chartGeneral,{
 
 type:"bar",
@@ -810,7 +1023,7 @@ data:[o,a],
 
 backgroundColor:[
 "#ff6a00",
-"#2ecc71"
+"#16a34a"
 ]
 
 }]
@@ -821,33 +1034,27 @@ backgroundColor:[
 
 }
 
-/* GRAFICA PROYECTO */
-
 function renderProyecto(data){
 
 if(window.chart2)
 chart2.destroy();
 
-window.chart2 =
+window.chart2=
 new Chart(chartProyecto,{
 
 type:"bar",
 
 data:{
 
-labels:
-Object.keys(data),
+labels:Object.keys(data),
 
 datasets:[{
 
-label:
-"Ahorro por proyecto",
+label:"Ahorro",
 
-data:
-Object.values(data),
+data:Object.values(data),
 
-backgroundColor:
-"#2d7ff9"
+backgroundColor:"#2563eb"
 
 }]
 
@@ -857,16 +1064,46 @@ backgroundColor:
 
 }
 
-/* EXPORTAR */
+function renderMensual(data){
+
+if(window.chart3)
+chart3.destroy();
+
+window.chart3=
+new Chart(chartMensual,{
+
+type:"line",
+
+data:{
+
+labels:Object.keys(data),
+
+datasets:[{
+
+label:"Ahorro Mensual",
+
+data:Object.values(data),
+
+borderColor:"#ff6a00",
+
+fill:false
+
+}]
+
+}
+
+});
+
+}
 
 window.exportarExcel=()=>{
 
-let ws =
+let ws=
 XLSX.utils.json_to_sheet(
 datosGlobal
 );
 
-let wb =
+let wb=
 XLSX.utils.book_new();
 
 XLSX.utils.book_append_sheet(
@@ -882,11 +1119,38 @@ wb,
 
 };
 
-/* EDITAR */
+window.exportarPDF=()=>{
+
+const { jsPDF } = window.jspdf;
+
+let doc=
+new jsPDF();
+
+doc.setFontSize(18);
+
+doc.text(
+"Reporte Dashboard Ahorros",
+20,
+20
+);
+
+doc.text(
+"Total ahorro: $"+kpiAhorro.innerText,
+20,
+40
+);
+
+doc.save(
+"reporte-ahorros.pdf"
+);
+
+mostrarToast("PDF generado");
+
+};
 
 window.editar=async(id)=>{
 
-let docSnap =
+let docSnap=
 await getDoc(
 doc(db,"ahorros",id)
 );
@@ -894,29 +1158,25 @@ doc(db,"ahorros",id)
 let d=
 docSnap.data();
 
-proyecto.value=
-d.proyecto;
+proyecto.value=d.proyecto;
 
-responsable.value=
-d.responsable;
+responsable.value=d.responsable;
 
-unidad.value=
-d.unidad;
+unidad.value=d.unidad;
 
-tipo.value=
-d.tipo;
+tipo.value=d.tipo;
 
-descripcion.value=
-d.descripcion;
+estatus.value=d.estatus;
 
-fecha.value=
-d.fecha;
+descripcion.value=d.descripcion;
 
-original.value=
-d.original;
+comentarios.value=d.comentarios;
 
-optimizado.value=
-d.optimizado;
+fecha.value=d.fecha;
+
+original.value=d.original;
+
+optimizado.value=d.optimizado;
 
 try{
 
@@ -935,11 +1195,9 @@ editId=id;
 
 };
 
-/* ELIMINAR */
-
 window.eliminar=async(id)=>{
 
-let confirmar =
+let confirmar=
 confirm(
 "¿Seguro que deseas eliminar este registro?"
 );
@@ -950,17 +1208,38 @@ await deleteDoc(
 doc(db,"ahorros",id)
 );
 
+mostrarToast("Registro eliminado");
+
 cargar();
 
 };
 
-/* LIMPIAR */
+window.ordenar=(campo)=>{
+
+if(ordenActual===campo){
+
+datosGlobal.reverse();
+
+}else{
+
+datosGlobal.sort(
+(a,b)=>
+(b[campo]||0)
+-(a[campo]||0)
+);
+
+}
+
+ordenActual=campo;
+
+};
 
 function limpiar(){
 
 proyecto.value="";
 responsable.value="";
 descripcion.value="";
+comentarios.value="";
 original.value="";
 optimizado.value="";
 fecha.value="";
@@ -970,8 +1249,6 @@ archivosEvidencia=[];
 renderArchivos();
 
 }
-
-/* INICIO */
 
 cargar();
 
