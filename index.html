@@ -2,15 +2,13 @@
 <html lang="es">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Dashboard Ahorros FLUTEC PRO MAX</title>
+<title>Dashboard Ahorros FLUTEC</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 
@@ -32,9 +30,7 @@ padding:15px 25px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-flex-wrap:wrap;
 color:white;
-box-shadow:0 2px 10px rgba(0,0,0,.2);
 }
 
 .logo-area{
@@ -64,10 +60,6 @@ border-radius:15px;
 box-shadow:0 4px 15px rgba(0,0,0,.08);
 }
 
-h2,h3{
-margin-bottom:15px;
-}
-
 input,
 select,
 textarea{
@@ -76,28 +68,24 @@ padding:12px;
 margin-top:10px;
 border-radius:10px;
 border:1px solid #d1d5db;
-font-size:14px;
 }
 
 textarea{
-min-height:90px;
-resize:vertical;
+min-height:80px;
 }
 
 button{
 background:#ff6a00;
 color:white;
 border:none;
-padding:12px 16px;
+padding:12px 15px;
 border-radius:10px;
 cursor:pointer;
 margin-top:10px;
 font-weight:bold;
-transition:.2s;
 }
 
 button:hover{
-transform:scale(1.02);
 opacity:.9;
 }
 
@@ -107,13 +95,13 @@ background:#dc2626;
 
 .btn-edit{
 background:#2563eb;
-margin-bottom:5px;
 }
 
 .kpis{
 display:flex;
 gap:15px;
 flex-wrap:wrap;
+margin-bottom:20px;
 }
 
 .kpi{
@@ -123,7 +111,6 @@ padding:25px;
 border-radius:15px;
 color:white;
 text-align:center;
-font-size:18px;
 }
 
 .orange{
@@ -143,7 +130,7 @@ background:linear-gradient(90deg,#ff6a00,#ff8c00);
 padding:35px;
 border-radius:20px;
 color:white;
-font-size:42px;
+font-size:40px;
 font-weight:bold;
 text-align:center;
 margin-bottom:20px;
@@ -176,16 +163,28 @@ margin-top:10px;
 
 .preview-item{
 position:relative;
-background:#f3f4f6;
-padding:6px;
-border-radius:12px;
 }
 
 .preview-item img{
-width:90px;
-height:90px;
+width:80px;
+height:80px;
 object-fit:cover;
 border-radius:10px;
+}
+
+.preview-file{
+width:80px;
+height:80px;
+background:#f3f4f6;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:5px;
+border-radius:10px;
+font-size:11px;
+text-decoration:none;
+color:black;
 }
 
 .preview-remove{
@@ -197,23 +196,9 @@ height:22px;
 border-radius:50%;
 background:red;
 color:white;
+border:none;
 font-size:11px;
-padding:0;
-}
-
-.preview-file{
-width:90px;
-height:90px;
-display:flex;
-align-items:center;
-justify-content:center;
-text-align:center;
-font-size:11px;
-background:white;
-padding:5px;
-border-radius:10px;
-text-decoration:none;
-color:#1f2937;
+cursor:pointer;
 }
 
 .toast{
@@ -226,41 +211,6 @@ padding:15px;
 border-radius:10px;
 display:none;
 z-index:9999;
-}
-
-.dark{
-background:#111827;
-color:white;
-}
-
-.dark .card{
-background:#1f2937;
-color:white;
-}
-
-.dark input,
-.dark select,
-.dark textarea{
-background:#111827;
-color:white;
-border:1px solid #4b5563;
-}
-
-.dark table{
-color:white;
-}
-
-@media(max-width:900px){
-
-.kpis{
-flex-direction:column;
-}
-
-table{
-display:block;
-overflow:auto;
-}
-
 }
 
 </style>
@@ -282,16 +232,12 @@ Dashboard de Ahorros
 </div>
 
 <div style="font-size:13px;opacity:.8;">
-FLUTEC PRO MAX
+FLUTEC
 </div>
 
 </div>
 
 </div>
-
-<button onclick="toggleDarkMode()">
-🌙 Dark Mode
-</button>
 
 </div>
 
@@ -299,7 +245,7 @@ FLUTEC PRO MAX
 
 <div class="kpi-big">
 
-💰 AHORRO TOTAL ANUAL
+💰 AHORRO TOTAL
 
 <br>
 
@@ -309,7 +255,7 @@ FLUTEC PRO MAX
 
 <div class="card">
 
-<h2>➕ Nuevo Registro</h2>
+<h2>Nuevo Registro</h2>
 
 <input id="proyecto" placeholder="Proyecto">
 
@@ -327,24 +273,20 @@ FLUTEC PRO MAX
 <option>Proveedor</option>
 </select>
 
-<textarea id="descripcion" placeholder="Descripción del ahorro"></textarea>
+<textarea id="descripcion" placeholder="Descripción"></textarea>
 
 <textarea id="comentarios" placeholder="Comentarios"></textarea>
 
 <input type="date" id="fecha">
 
-<input type="number" id="original" placeholder="Costo Original">
+<input type="number" id="original" placeholder="Costo original">
 
-<input type="number" id="optimizado" placeholder="Costo Optimizado">
-
-<label style="margin-top:15px;display:block;">
-<b>Evidencias</b>
-</label>
+<input type="number" id="optimizado" placeholder="Costo optimizado">
 
 <input type="file" id="evidencia" multiple>
 
 <button type="button" onclick="agregarArchivo()">
-Agregar Archivo
+Agregar archivo
 </button>
 
 <div id="previewArchivos" class="preview-grid"></div>
@@ -357,19 +299,13 @@ Guardar Registro
 
 <div class="card">
 
-<h2>🔎 Filtros</h2>
-
 <input
-id="busquedaRapida"
+id="busqueda"
 placeholder="Buscar..."
 onkeyup="cargar()">
 
 <button onclick="exportarExcel()">
 Exportar Excel
-</button>
-
-<button onclick="exportarPDF()">
-Exportar PDF
 </button>
 
 </div>
@@ -395,7 +331,7 @@ Exportar PDF
 
 <div class="card">
 
-<h3>📈 Gráfica General</h3>
+<h3>Gráfica General</h3>
 
 <canvas id="chartGeneral"></canvas>
 
@@ -403,31 +339,7 @@ Exportar PDF
 
 <div class="card">
 
-<h3>📊 Gráfica por Proyecto</h3>
-
-<canvas id="chartProyecto"></canvas>
-
-</div>
-
-<div class="card">
-
-<h3>📅 Gráfica Mensual</h3>
-
-<canvas id="chartMensual"></canvas>
-
-</div>
-
-<div class="card">
-
-<h3>🏆 Top Responsables</h3>
-
-<div id="topResponsables"></div>
-
-</div>
-
-<div class="card">
-
-<h3>📋 Registros</h3>
+<h3>Registros</h3>
 
 <table>
 
@@ -470,37 +382,23 @@ let archivosActuales=[];
 
 function mostrarToast(msg){
 
-let t=document.getElementById("toast");
+toast.innerText=msg;
 
-t.innerText=msg;
-
-t.style.display="block";
+toast.style.display="block";
 
 setTimeout(()=>{
-t.style.display="none";
-},3000);
-
-}
-
-function toggleDarkMode(){
-
-document.body.classList.toggle("dark");
+toast.style.display="none";
+},2500);
 
 }
 
 function agregarArchivo(){
 
-let input=document.getElementById("evidencia");
+let files=evidencia.files;
 
-if(!input.files.length){
+if(!files.length) return;
 
-alert("Selecciona archivo");
-
-return;
-
-}
-
-Array.from(input.files).forEach(file=>{
+Array.from(files).forEach(file=>{
 
 let reader=new FileReader();
 
@@ -509,9 +407,7 @@ reader.onload=function(e){
 archivosActuales.push({
 
 nombre:file.name,
-
 tipo:file.type,
-
 url:e.target.result
 
 });
@@ -524,7 +420,7 @@ reader.readAsDataURL(file);
 
 });
 
-input.value="";
+evidencia.value="";
 
 }
 
@@ -597,12 +493,6 @@ previewArchivos.innerHTML+=html;
 
 function eliminarArchivo(index){
 
-let confirmar=confirm(
-"¿Eliminar archivo?"
-);
-
-if(!confirmar) return;
-
 archivosActuales.splice(index,1);
 
 renderPreview();
@@ -611,11 +501,11 @@ renderPreview();
 
 function guardar(){
 
-let original=parseFloat(original.value)||0;
+let originalNum=
+parseFloat(original.value)||0;
 
-let optimizado=parseFloat(optimizado.value)||0;
-
-let ahorro=original-optimizado;
+let optimizadoNum=
+parseFloat(optimizado.value)||0;
 
 let registro={
 
@@ -635,13 +525,14 @@ descripcion:descripcion.value,
 
 comentarios:comentarios.value,
 
-original,
+original:originalNum,
 
-optimizado,
+optimizado:optimizadoNum,
 
-ahorro,
+ahorro:
+originalNum-optimizadoNum,
 
-evidencias:archivosActuales
+evidencias:[...archivosActuales]
 
 };
 
@@ -692,11 +583,11 @@ localStorage.setItem(
 JSON.stringify(datos)
 );
 
+cargar();
+
 mostrarToast(
 "Registro cargado para edición"
 );
-
-cargar();
 
 }
 
@@ -715,10 +606,6 @@ localStorage.setItem(
 JSON.stringify(datos)
 );
 
-mostrarToast(
-"Registro eliminado"
-);
-
 cargar();
 
 }
@@ -730,32 +617,23 @@ tabla.innerHTML="";
 let totalOriginal=0;
 let totalAhorro=0;
 
-let ahorroProyecto={};
-let ahorroMensual={};
-let top={};
+let busquedaTexto=
+busqueda.value.toLowerCase();
 
 datos.forEach(d=>{
+
+let texto=
+JSON.stringify(d).toLowerCase();
+
+if(!texto.includes(busquedaTexto))
+return;
 
 totalOriginal+=d.original;
 totalAhorro+=d.ahorro;
 
-ahorroProyecto[d.proyecto]=
-(ahorroProyecto[d.proyecto]||0)
-+d.ahorro;
-
-let mes=d.fecha.substring(0,7);
-
-ahorroMensual[mes]=
-(ahorroMensual[mes]||0)
-+d.ahorro;
-
-top[d.responsable]=
-(top[d.responsable]||0)
-+d.ahorro;
-
 let evidenciasHTML="";
 
-d.evidencias.forEach(a=>{
+(d.evidencias||[]).forEach(a=>{
 
 if(a.tipo.includes("image")){
 
@@ -769,7 +647,7 @@ style="
 width:50px;
 height:50px;
 border-radius:8px;
-margin:3px;
+margin:2px;
 ">
 
 </a>
@@ -799,13 +677,9 @@ tabla.innerHTML+=`
 <tr>
 
 <td>${d.fecha}</td>
-
 <td>${d.proyecto}</td>
-
 <td>${d.responsable}</td>
-
 <td>${d.unidad}</td>
-
 <td>${d.tipo}</td>
 
 <td>
@@ -820,16 +694,10 @@ ${d.comentarios||""}
 
 </td>
 
-<td>
-
-${evidenciasHTML}
-
-</td>
+<td>${evidenciasHTML}</td>
 
 <td>
-
 $${d.ahorro.toLocaleString()}
-
 </td>
 
 <td>
@@ -842,7 +710,7 @@ Editar
 
 </button>
 
-<br>
+<br><br>
 
 <button
 class="btn-danger"
@@ -866,54 +734,26 @@ kpiOriginal.innerText=
 kpiAhorro.innerText=
 "$"+totalAhorro.toLocaleString();
 
-let porcentaje=
-totalOriginal
-? ((totalAhorro/totalOriginal)*100)
-:0;
-
 kpiPorcentaje.innerText=
-porcentaje.toFixed(2)+"%";
+totalOriginal
+?
+(
+(totalAhorro/totalOriginal)*100
+).toFixed(2)+"%"
+:
+"0%";
 
 ahorroAnual.innerText=
 "$"+totalAhorro.toLocaleString();
 
-renderGeneral(totalOriginal,totalAhorro);
-
-renderProyecto(ahorroProyecto);
-
-renderMensual(ahorroMensual);
-
-let html="";
-
-Object.entries(top)
-.sort((a,b)=>b[1]-a[1])
-.slice(0,5)
-.forEach(t=>{
-
-html+=`
-
-<div style="
-padding:10px;
-background:#f3f4f6;
-margin-bottom:10px;
-border-radius:10px;
-">
-
-${t[0]}
-→
-<b>$${t[1].toLocaleString()}</b>
-
-</div>
-
-`;
-
-});
-
-topResponsables.innerHTML=html;
+renderGrafica(
+totalOriginal,
+totalAhorro
+);
 
 }
 
-function renderGeneral(o,a){
+function renderGrafica(original,ahorro){
 
 if(window.chart1)
 chart1.destroy();
@@ -932,74 +772,15 @@ labels:[
 
 datasets:[{
 
-data:[o,a],
+data:[
+original,
+ahorro
+],
 
 backgroundColor:[
-"#ff6a00",
-"#16a34a"
+"#2563eb",
+"#ff6a00"
 ]
-
-}]
-
-}
-
-});
-
-}
-
-function renderProyecto(data){
-
-if(window.chart2)
-chart2.destroy();
-
-window.chart2=
-new Chart(chartProyecto,{
-
-type:"bar",
-
-data:{
-
-labels:Object.keys(data),
-
-datasets:[{
-
-label:"Ahorro",
-
-data:Object.values(data),
-
-backgroundColor:"#2563eb"
-
-}]
-
-}
-
-});
-
-}
-
-function renderMensual(data){
-
-if(window.chart3)
-chart3.destroy();
-
-window.chart3=
-new Chart(chartMensual,{
-
-type:"line",
-
-data:{
-
-labels:Object.keys(data),
-
-datasets:[{
-
-label:"Ahorro mensual",
-
-data:Object.values(data),
-
-borderColor:"#ff6a00",
-
-fill:false
 
 }]
 
@@ -1030,40 +811,15 @@ wb,
 
 }
 
-function exportarPDF(){
-
-const { jsPDF } = window.jspdf;
-
-let doc=new jsPDF();
-
-doc.text(
-"Reporte Dashboard Ahorros",
-20,
-20
-);
-
-doc.text(
-"Total ahorro: "+
-kpiAhorro.innerText,
-20,
-40
-);
-
-doc.save(
-"reporte-ahorros.pdf"
-);
-
-}
-
 function limpiar(){
 
 proyecto.value="";
 responsable.value="";
 descripcion.value="";
 comentarios.value="";
+fecha.value="";
 original.value="";
 optimizado.value="";
-fecha.value="";
 
 archivosActuales=[];
 
