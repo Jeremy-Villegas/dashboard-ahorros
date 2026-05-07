@@ -8,142 +8,143 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 <style>
-body {
-font-family: 'Segoe UI', Arial, sans-serif;
-background: #e5e7eb;
-margin: 0;
-color: #2c3e50;
+
+body{
+font-family:'Segoe UI',Arial,sans-serif;
+background:#e5e7eb;
+margin:0;
+color:#2c3e50;
 }
 
-/* HEADER */
-.header {
-background: #1f2937;
-color: white;
-padding: 15px 25px;
-font-weight: bold;
-display: flex;
-justify-content: space-between;
-align-items: center;
+.header{
+background:#1f2937;
+color:white;
+padding:15px 25px;
+font-weight:bold;
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
-/* CONTENEDOR */
-.container {
-max-width: 1400px;
-margin: 20px auto;
-padding: 20px;
-background: #f9fafb;
-border-radius: 10px;
+.container{
+max-width:1400px;
+margin:20px auto;
+padding:20px;
+background:#f9fafb;
+border-radius:10px;
 }
 
-/* TITULOS */
-h2 {
-color: #1f2937;
-margin-bottom: 15px;
+h2{
+color:#1f2937;
+margin-bottom:15px;
 }
 
-h3 {
-color: #374151;
-margin-bottom: 10px;
+h3{
+color:#374151;
+margin-bottom:10px;
 }
 
-/* CARDS */
-.card {
-background: #ffffff;
-padding: 20px;
-margin-bottom: 20px;
-border-radius: 8px;
-border: 1px solid #d1d5db;
-box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+.card{
+background:#ffffff;
+padding:20px;
+margin-bottom:20px;
+border-radius:8px;
+border:1px solid #d1d5db;
+box-shadow:0 2px 6px rgba(0,0,0,0.05);
 }
 
-/* INPUTS */
-input, select, textarea {
-width: 100%;
-padding: 10px;
-margin: 6px 0;
-border-radius: 6px;
-border: 1px solid #cfd4da;
-background: #f9fafb;
-box-sizing: border-box;
+input,select,textarea{
+width:100%;
+padding:10px;
+margin:6px 0;
+border-radius:6px;
+border:1px solid #cfd4da;
+background:#f9fafb;
+box-sizing:border-box;
 }
 
-/* BOTONES */
-button {
-background: #2d7ff9;
-color: white;
-border: none;
-padding: 8px 12px;
-border-radius: 6px;
-cursor: pointer;
+button{
+background:#2d7ff9;
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+cursor:pointer;
 }
 
-button:hover {
-background: #1c5fd4;
+button:hover{
+background:#1c5fd4;
 }
 
-/* KPIs */
-.kpis {
-display: flex;
-gap: 15px;
-flex-wrap: wrap;
+.kpis{
+display:flex;
+gap:15px;
+flex-wrap:wrap;
 }
 
-.kpi {
-flex: 1;
-padding: 15px;
-border-radius: 8px;
-text-align: center;
-color: white;
-font-weight: bold;
+.kpi{
+flex:1;
+padding:15px;
+border-radius:8px;
+text-align:center;
+color:white;
+font-weight:bold;
 }
 
-.kpi.orange { background: #ff6a00; }
-.kpi.blue { background: #2d7ff9; }
-.kpi.green { background: #2ecc71; }
-
-/* TABLA */
-table {
-width: 100%;
-border-collapse: collapse;
-background: white;
+.kpi.orange{
+background:#ff6a00;
 }
 
-th {
-background: #2c3e50;
-color: white;
-padding: 10px;
-font-size: 13px;
+.kpi.blue{
+background:#2d7ff9;
 }
 
-td {
-padding: 8px;
-border-bottom: 1px solid #e5e7eb;
-font-size: 13px;
-vertical-align: top;
+.kpi.green{
+background:#2ecc71;
 }
 
-tr:hover {
-background: #f5f7fa;
+table{
+width:100%;
+border-collapse:collapse;
+background:white;
 }
 
-/* BOTONES TABLA */
-td button {
-margin: 2px;
-padding: 5px 8px;
-font-size: 12px;
+th{
+background:#2c3e50;
+color:white;
+padding:10px;
+font-size:13px;
 }
 
-td button:nth-child(1) {
-background: #3498db;
+td{
+padding:8px;
+border-bottom:1px solid #e5e7eb;
+font-size:13px;
+vertical-align:top;
 }
 
-td button:nth-child(2) {
-background: #e74c3c;
+tr:hover{
+background:#f5f7fa;
 }
 
-canvas {
-margin-top: 15px;
+td button{
+margin:2px;
+padding:5px 8px;
+font-size:12px;
 }
+
+td button:nth-child(1){
+background:#3498db;
+}
+
+td button:nth-child(2){
+background:#e74c3c;
+}
+
+canvas{
+margin-top:15px;
+}
+
 </style>
 </head>
 
@@ -159,6 +160,7 @@ Dashboard de Ahorros
 <h2>📊 Dashboard Ahorros PRO MAX</h2>
 
 <!-- FORMULARIO -->
+
 <div class="card">
 
 <input id="proyecto" placeholder="Proyecto">
@@ -195,6 +197,7 @@ placeholder="Costo optimizado">
 </div>
 
 <!-- FILTROS -->
+
 <div class="card">
 
 <select id="filtroProyecto" onchange="cargar()">
@@ -203,6 +206,14 @@ placeholder="Costo optimizado">
 
 <select id="filtroResponsable" onchange="cargar()">
 <option value="todos">Todos los responsables</option>
+</select>
+
+<select id="filtroTipo" onchange="cargar()">
+<option value="todos">Todos los tipos</option>
+<option value="Material">Material</option>
+<option value="Mano de obra">Mano de obra</option>
+<option value="Tiempo">Tiempo</option>
+<option value="Proveedor">Proveedor</option>
 </select>
 
 <input type="date" id="filtroInicio" onchange="cargar()">
@@ -216,6 +227,7 @@ Exportar a Excel
 </div>
 
 <!-- KPIs -->
+
 <div class="card kpis">
 
 <div class="kpi orange">
@@ -236,23 +248,27 @@ Exportar a Excel
 </div>
 
 <!-- GRAFICA GENERAL -->
+
 <div class="card">
 <h3>Gráfica General</h3>
 <canvas id="chartGeneral"></canvas>
 </div>
 
 <!-- GRAFICA PROYECTO -->
+
 <div class="card">
 <h3>Gráfica por Proyecto</h3>
 <canvas id="chartProyecto"></canvas>
 </div>
 
 <!-- TABLA -->
+
 <div class="card">
 
 <table>
 
 <thead>
+
 <tr>
 <th>Fecha</th>
 <th>Proyecto</th>
@@ -266,6 +282,7 @@ Exportar a Excel
 <th>Ahorro</th>
 <th>Acciones</th>
 </tr>
+
 </thead>
 
 <tbody id="tabla"></tbody>
@@ -305,38 +322,39 @@ appId: "1:182706196966:web:582eb05fe372327f720627"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let editId = null;
-let datosGlobal = [];
+let editId=null;
+let datosGlobal=[];
 
 /* GUARDAR */
-window.guardar = async () => {
 
-let data = {
+window.guardar=async()=>{
 
-proyecto: proyecto.value,
-responsable: responsable.value,
-unidad: unidad.value,
-tipo: tipo.value,
-descripcion: descripcion.value,
-evidencia: evidencia.files[0]
+let data={
+
+proyecto:proyecto.value,
+responsable:responsable.value,
+unidad:unidad.value,
+tipo:tipo.value,
+descripcion:descripcion.value,
+evidencia:evidencia.files[0]
 ? evidencia.files[0].name
 : "",
-fecha: fecha.value,
-original: parseFloat(original.value),
-optimizado: parseFloat(optimizado.value)
+fecha:fecha.value,
+original:parseFloat(original.value),
+optimizado:parseFloat(optimizado.value)
 
 };
 
-if(!data.proyecto ||
-!data.responsable ||
-!data.fecha) {
+if(!data.proyecto
+|| !data.responsable
+|| !data.fecha){
 
 return alert("Faltan datos");
 
 }
 
-data.ahorro =
-data.original - data.optimizado;
+data.ahorro=
+data.original-data.optimizado;
 
 if(editId){
 
@@ -345,7 +363,7 @@ doc(db,"ahorros",editId),
 data
 );
 
-editId = null;
+editId=null;
 
 }else{
 
@@ -362,67 +380,83 @@ cargar();
 };
 
 /* CARGAR */
-window.cargar = async () => {
 
-let snapshot =
-await getDocs(collection(db,"ahorros"));
+window.cargar=async()=>{
 
-tabla.innerHTML = "";
+let snapshot=
+await getDocs(
+collection(db,"ahorros")
+);
 
-let totalOriginal = 0;
-let totalAhorro = 0;
+tabla.innerHTML="";
 
-let proyectos = new Set();
-let responsables = new Set();
+let totalOriginal=0;
+let totalAhorro=0;
 
-let ahorroPorProyecto = {};
+let proyectos=new Set();
+let responsables=new Set();
 
-let fProyecto =
+let ahorroPorProyecto={};
+
+let fProyecto=
 filtroProyecto.value;
 
-let fResponsable =
+let fResponsable=
 filtroResponsable.value;
 
-let fInicio =
+let fTipo=
+filtroTipo.value;
+
+let fInicio=
 filtroInicio.value;
 
-let fFin =
+let fFin=
 filtroFin.value;
 
-datosGlobal = [];
+datosGlobal=[];
 
 snapshot.forEach(docu=>{
 
-let d = docu.data();
+let d=docu.data();
 
 proyectos.add(d.proyecto);
 responsables.add(d.responsable);
 
 /* FILTROS */
-if(fProyecto !== "todos"
-&& d.proyecto !== fProyecto)
+
+if(fProyecto!=="todos"
+&& d.proyecto!==fProyecto)
 return;
 
-if(fResponsable !== "todos"
-&& d.responsable !== fResponsable)
+if(fResponsable!=="todos"
+&& d.responsable!==fResponsable)
 return;
 
-if(fInicio && d.fecha < fInicio)
+if(fTipo!=="todos"
+&& d.tipo!==fTipo)
 return;
 
-if(fFin && d.fecha > fFin)
+if(fInicio
+&& d.fecha<fInicio)
+return;
+
+if(fFin
+&& d.fecha>fFin)
 return;
 
 datosGlobal.push(d);
 
-totalOriginal += d.original;
-totalAhorro += d.ahorro;
+totalOriginal+=d.original;
+totalAhorro+=d.ahorro;
 
-ahorroPorProyecto[d.proyecto] =
-(ahorroPorProyecto[d.proyecto] || 0)
-+ d.ahorro;
+ahorroPorProyecto[d.proyecto]=
+(ahorroPorProyecto[d.proyecto]||0)
++d.ahorro;
 
-tabla.innerHTML += `
+/* TABLA */
+
+tabla.innerHTML+=`
+
 <tr>
 
 <td>${d.fecha}</td>
@@ -431,13 +465,13 @@ tabla.innerHTML += `
 
 <td>${d.responsable}</td>
 
-<td>${d.unidad || ""}</td>
+<td>${d.unidad||""}</td>
 
 <td>${d.tipo}</td>
 
-<td>${d.descripcion || ""}</td>
+<td>${d.descripcion||""}</td>
 
-<td>${d.evidencia || ""}</td>
+<td>${d.evidencia||""}</td>
 
 <td>${d.original}</td>
 
@@ -446,6 +480,7 @@ tabla.innerHTML += `
 <td>${d.ahorro}</td>
 
 <td>
+
 <button onclick="editar('${docu.id}')">
 Editar
 </button>
@@ -453,48 +488,55 @@ Editar
 <button onclick="eliminar('${docu.id}')">
 Eliminar
 </button>
+
 </td>
 
 </tr>
+
 `;
 
 });
 
 /* KPIs */
-kpiOriginal.innerText =
+
+kpiOriginal.innerText=
 totalOriginal;
 
-kpiAhorro.innerText =
+kpiAhorro.innerText=
 totalAhorro;
 
-kpiPorcentaje.innerText =
+kpiPorcentaje.innerText=
 totalOriginal
-? ((totalAhorro / totalOriginal)
-* 100).toFixed(2) + "%"
+? ((totalAhorro/totalOriginal)
+*100).toFixed(2)+"%"
 : "0%";
 
-/* FILTROS */
-filtroProyecto.innerHTML =
+/* FILTRO PROYECTO */
+
+filtroProyecto.innerHTML=
 '<option value="todos">Todos los proyectos</option>';
 
 proyectos.forEach(p=>{
 
-filtroProyecto.innerHTML +=
+filtroProyecto.innerHTML+=
 `<option>${p}</option>`;
 
 });
 
-filtroResponsable.innerHTML =
+/* FILTRO RESPONSABLE */
+
+filtroResponsable.innerHTML=
 '<option value="todos">Todos los responsables</option>';
 
 responsables.forEach(r=>{
 
-filtroResponsable.innerHTML +=
+filtroResponsable.innerHTML+=
 `<option>${r}</option>`;
 
 });
 
 /* GRAFICAS */
+
 renderGeneral(
 totalOriginal,
 totalAhorro
@@ -507,26 +549,35 @@ ahorroPorProyecto
 };
 
 /* GRAFICA GENERAL */
+
 function renderGeneral(o,a){
 
 if(window.chart1)
 chart1.destroy();
 
-window.chart1 =
+window.chart1=
 new Chart(chartGeneral,{
 
 type:"bar",
 
 data:{
-labels:["Original","Ahorro"],
+
+labels:[
+"Original",
+"Ahorro"
+],
 
 datasets:[{
+
 data:[o,a],
+
 backgroundColor:[
 "#ff6a00",
 "#2ecc71"
 ]
+
 }]
+
 }
 
 });
@@ -534,24 +585,31 @@ backgroundColor:[
 }
 
 /* GRAFICA PROYECTO */
+
 function renderProyecto(data){
 
 if(window.chart2)
 chart2.destroy();
 
-window.chart2 =
+window.chart2=
 new Chart(chartProyecto,{
 
 type:"bar",
 
 data:{
+
 labels:Object.keys(data),
 
 datasets:[{
+
 label:"Ahorro por proyecto",
+
 data:Object.values(data),
+
 backgroundColor:"#2d7ff9"
+
 }]
+
 }
 
 });
@@ -559,12 +617,15 @@ backgroundColor:"#2d7ff9"
 }
 
 /* EXPORTAR */
-window.exportarExcel = ()=>{
 
-let ws =
-XLSX.utils.json_to_sheet(datosGlobal);
+window.exportarExcel=()=>{
 
-let wb =
+let ws=
+XLSX.utils.json_to_sheet(
+datosGlobal
+);
+
+let wb=
 XLSX.utils.book_new();
 
 XLSX.utils.book_append_sheet(
@@ -581,28 +642,33 @@ wb,
 };
 
 /* EDITAR */
-window.editar = async(id)=>{
 
-let docSnap =
-await getDoc(doc(db,"ahorros",id));
+window.editar=async(id)=>{
 
-let d = docSnap.data();
+let docSnap=
+await getDoc(
+doc(db,"ahorros",id)
+);
 
-proyecto.value = d.proyecto;
-responsable.value = d.responsable;
-unidad.value = d.unidad;
-tipo.value = d.tipo;
-descripcion.value = d.descripcion;
-fecha.value = d.fecha;
-original.value = d.original;
-optimizado.value = d.optimizado;
+let d=
+docSnap.data();
 
-editId = id;
+proyecto.value=d.proyecto;
+responsable.value=d.responsable;
+unidad.value=d.unidad;
+tipo.value=d.tipo;
+descripcion.value=d.descripcion;
+fecha.value=d.fecha;
+original.value=d.original;
+optimizado.value=d.optimizado;
+
+editId=id;
 
 };
 
 /* ELIMINAR */
-window.eliminar = async(id)=>{
+
+window.eliminar=async(id)=>{
 
 await deleteDoc(
 doc(db,"ahorros",id)
@@ -613,18 +679,20 @@ cargar();
 };
 
 /* LIMPIAR */
+
 function limpiar(){
 
-proyecto.value = "";
-responsable.value = "";
-descripcion.value = "";
-original.value = "";
-optimizado.value = "";
-fecha.value = "";
+proyecto.value="";
+responsable.value="";
+descripcion.value="";
+original.value="";
+optimizado.value="";
+fecha.value="";
 
 }
 
 /* INICIO */
+
 cargar();
 
 </script>
