@@ -216,30 +216,6 @@ text-decoration:none;
 color:#1f2937;
 }
 
-.badge{
-padding:6px 12px;
-border-radius:20px;
-color:white;
-font-size:11px;
-font-weight:bold;
-}
-
-.badge-propuesto{
-background:#2563eb;
-}
-
-.badge-revision{
-background:#f59e0b;
-}
-
-.badge-aprobado{
-background:#16a34a;
-}
-
-.badge-implementado{
-background:#7c3aed;
-}
-
 .toast{
 position:fixed;
 top:20px;
@@ -351,13 +327,6 @@ FLUTEC PRO MAX
 <option>Proveedor</option>
 </select>
 
-<select id="estatus">
-<option>Propuesto</option>
-<option>En revisión</option>
-<option>Aprobado</option>
-<option>Implementado</option>
-</select>
-
 <textarea id="descripcion" placeholder="Descripción del ahorro"></textarea>
 
 <textarea id="comentarios" placeholder="Comentarios"></textarea>
@@ -394,28 +363,6 @@ Guardar Registro
 id="busquedaRapida"
 placeholder="Buscar..."
 onkeyup="cargar()">
-
-<select id="filtroProyecto" onchange="cargar()">
-<option value="todos">Todos los proyectos</option>
-</select>
-
-<select id="filtroResponsable" onchange="cargar()">
-<option value="todos">Todos los responsables</option>
-</select>
-
-<select id="filtroUnidad" onchange="cargar()">
-<option value="todos">Todas las unidades</option>
-<option>F&P</option>
-<option>INST</option>
-</select>
-
-<select id="filtroTipo" onchange="cargar()">
-<option value="todos">Todos los tipos</option>
-<option>Material</option>
-<option>Mano de obra</option>
-<option>Tiempo</option>
-<option>Proveedor</option>
-</select>
 
 <button onclick="exportarExcel()">
 Exportar Excel
@@ -493,7 +440,6 @@ Exportar PDF
 <th>Responsable</th>
 <th>Unidad</th>
 <th>Tipo</th>
-<th>Estatus</th>
 <th>Descripción</th>
 <th>Evidencias</th>
 <th>Ahorro</th>
@@ -685,8 +631,6 @@ unidad:unidad.value,
 
 tipo:tipo.value,
 
-estatus:estatus.value,
-
 descripcion:descripcion.value,
 
 comentarios:comentarios.value,
@@ -729,7 +673,6 @@ proyecto.value=registro.proyecto;
 responsable.value=registro.responsable;
 unidad.value=registro.unidad;
 tipo.value=registro.tipo;
-estatus.value=registro.estatus;
 descripcion.value=registro.descripcion;
 comentarios.value=registro.comentarios;
 fecha.value=registro.fecha;
@@ -851,17 +794,6 @@ ${a.nombre}
 
 });
 
-let badge="badge-propuesto";
-
-if(d.estatus==="En revisión")
-badge="badge-revision";
-
-if(d.estatus==="Aprobado")
-badge="badge-aprobado";
-
-if(d.estatus==="Implementado")
-badge="badge-implementado";
-
 tabla.innerHTML+=`
 
 <tr>
@@ -875,14 +807,6 @@ tabla.innerHTML+=`
 <td>${d.unidad}</td>
 
 <td>${d.tipo}</td>
-
-<td>
-
-<span class="badge ${badge}">
-${d.estatus}
-</span>
-
-</td>
 
 <td>
 
