@@ -4,6 +4,8 @@
 
 <meta charset="UTF-8">
 
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Dashboard Ahorros FLUTEC PRO MAX</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -28,10 +30,12 @@ padding:15px 25px;
 display:flex;
 justify-content:space-between;
 align-items:center;
+flex-wrap:wrap;
+gap:10px;
 }
 
 .container{
-max-width:1500px;
+max-width:1600px;
 margin:20px auto;
 padding:20px;
 }
@@ -40,17 +44,24 @@ padding:20px;
 background:white;
 padding:20px;
 margin-bottom:20px;
-border-radius:10px;
-box-shadow:0 2px 8px rgba(0,0,0,0.1);
+border-radius:12px;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
 }
 
-input,select,textarea{
+input,
+select,
+textarea{
 width:100%;
 padding:10px;
 margin-top:8px;
-border-radius:6px;
+border-radius:8px;
 border:1px solid #d1d5db;
 box-sizing:border-box;
+}
+
+textarea{
+min-height:80px;
+resize:vertical;
 }
 
 button{
@@ -58,17 +69,18 @@ background:#ff6a00;
 color:white;
 border:none;
 padding:10px 15px;
-border-radius:6px;
+border-radius:8px;
 cursor:pointer;
 margin-top:10px;
+font-weight:bold;
 }
 
 button:hover{
-opacity:0.9;
+opacity:.9;
 }
 
 .btn-danger{
-background:#e74c3c;
+background:#dc2626;
 }
 
 .kpis{
@@ -80,9 +92,10 @@ flex-wrap:wrap;
 .kpi{
 flex:1;
 padding:20px;
-border-radius:10px;
+border-radius:12px;
 color:white;
 text-align:center;
+min-width:200px;
 }
 
 .orange{
@@ -111,6 +124,7 @@ margin-bottom:20px;
 table{
 width:100%;
 border-collapse:collapse;
+font-size:13px;
 }
 
 th{
@@ -121,27 +135,27 @@ cursor:pointer;
 }
 
 td{
-padding:8px;
+padding:10px;
 border-bottom:1px solid #e5e7eb;
-font-size:13px;
 vertical-align:top;
 }
 
 .link-archivo{
 display:block;
-font-size:12px;
 margin-bottom:5px;
 color:#2563eb;
 text-decoration:none;
+font-size:12px;
 }
 
 .archivo-item{
 display:flex;
 justify-content:space-between;
-background:#f3f4f6;
+align-items:center;
 padding:8px;
-border-radius:6px;
+background:#f3f4f6;
 margin-top:5px;
+border-radius:8px;
 }
 
 .toast{
@@ -182,8 +196,8 @@ color:white;
 padding:5px 10px;
 border-radius:20px;
 font-size:12px;
-color:white;
 font-weight:bold;
+color:white;
 }
 
 .badge-propuesto{
@@ -202,12 +216,65 @@ background:#16a34a;
 background:#7c3aed;
 }
 
-.galeria img{
-width:70px;
-height:70px;
+.preview-grid{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+margin-top:10px;
+}
+
+.preview-item{
+position:relative;
+background:#f3f4f6;
+padding:5px;
+border-radius:10px;
+}
+
+.preview-item img{
+width:90px;
+height:90px;
 object-fit:cover;
 border-radius:8px;
-margin:3px;
+}
+
+.preview-remove{
+position:absolute;
+top:-8px;
+right:-8px;
+background:red;
+color:white;
+border:none;
+border-radius:50%;
+width:22px;
+height:22px;
+font-size:11px;
+cursor:pointer;
+}
+
+.preview-file{
+width:90px;
+height:90px;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+font-size:11px;
+background:white;
+border-radius:8px;
+padding:5px;
+}
+
+@media(max-width:900px){
+
+.kpis{
+flex-direction:column;
+}
+
+table{
+display:block;
+overflow:auto;
+}
+
 }
 
 </style>
@@ -220,16 +287,17 @@ margin:3px;
 
 <div style="display:flex;align-items:center;gap:15px;">
 
-<img src="https://i.imgur.com/Qs7K8QH.png"
-style="height:55px;background:white;padding:5px;border-radius:8px;">
+<img
+src="https://github.com/Jeremy-Villegas/dashboard-ahorros/blob/main/LOGO%20FLUTEC.png?raw=true"
+style="height:60px;background:white;padding:5px;border-radius:10px;">
 
 <div>
 
-<div style="font-size:22px;font-weight:bold;">
+<div style="font-size:24px;font-weight:bold;">
 Dashboard de Ahorros
 </div>
 
-<div style="font-size:12px;opacity:.8;">
+<div style="font-size:13px;opacity:.8;">
 FLUTEC PRO MAX
 </div>
 
@@ -249,7 +317,7 @@ FLUTEC PRO MAX
 
 <div class="container">
 
-<h2>📊 Dashboard Ahorros PRO MAX</h2>
+<h2>📊 Dashboard Ejecutivo de Ahorros</h2>
 
 <div class="kpi-big">
 
@@ -268,57 +336,77 @@ FLUTEC PRO MAX
 <input id="responsable" placeholder="Responsable">
 
 <select id="unidad">
+
 <option>F&P</option>
+
 <option>INST</option>
+
 </select>
 
 <select id="tipo">
+
 <option>Material</option>
+
 <option>Mano de obra</option>
+
 <option>Tiempo</option>
+
 <option>Proveedor</option>
+
 </select>
 
 <select id="estatus">
+
 <option>Propuesto</option>
+
 <option>En revisión</option>
+
 <option>Aprobado</option>
+
 <option>Implementado</option>
+
 </select>
 
-<textarea id="descripcion"
+<textarea
+id="descripcion"
 placeholder="Descripción del ahorro"></textarea>
 
-<textarea id="comentarios"
+<textarea
+id="comentarios"
 placeholder="Comentarios adicionales"></textarea>
 
 <label><b>Evidencias</b></label>
 
-<input type="file"
+<input
+type="file"
 id="evidencia"
 multiple>
 
-<button type="button"
+<button
+type="button"
 onclick="agregarArchivo()">
 
 Agregar Archivo
 
 </button>
 
-<div id="listaArchivos"></div>
+<div id="previewArchivos"
+class="preview-grid"></div>
 
 <input type="date" id="fecha">
 
-<input type="number"
+<input
+type="number"
 id="original"
 placeholder="Costo original">
 
-<input type="number"
+<input
+type="number"
 id="optimizado"
 placeholder="Costo optimizado">
 
 <button onclick="guardar()">
-Guardar
+Guardar Registro
 </button>
 
 </div>
@@ -330,7 +418,8 @@ id="busquedaRapida"
 placeholder="Buscar proyecto, responsable o descripción..."
 onkeyup="cargar()">
 
-<select id="filtroProyecto"
+<select
+id="filtroProyecto"
 onchange="cargar()">
 
 <option value="todos">
@@ -339,7 +428,8 @@ Todos los proyectos
 
 </select>
 
-<select id="filtroResponsable"
+<select
+id="filtroResponsable"
 onchange="cargar()">
 
 <option value="todos">
@@ -348,7 +438,8 @@ Todos los responsables
 
 </select>
 
-<select id="filtroUnidad"
+<select
+id="filtroUnidad"
 onchange="cargar()">
 
 <option value="todos">
@@ -361,7 +452,8 @@ Todas las unidades
 
 </select>
 
-<select id="filtroTipo"
+<select
+id="filtroTipo"
 onchange="cargar()">
 
 <option value="todos">
@@ -377,14 +469,6 @@ Todos los tipos
 <option>Proveedor</option>
 
 </select>
-
-<input type="date"
-id="filtroInicio"
-onchange="cargar()">
-
-<input type="date"
-id="filtroFin"
-onchange="cargar()">
 
 <button onclick="exportarExcel()">
 Exportar Excel
@@ -480,17 +564,7 @@ Exportar PDF
 
 <th>Evidencias</th>
 
-<th onclick="ordenar('original')">
-Original
-</th>
-
-<th onclick="ordenar('optimizado')">
-Optimizado
-</th>
-
-<th onclick="ordenar('ahorro')">
-Ahorro
-</th>
+<th>Ahorro</th>
 
 <th>Acciones</th>
 
@@ -508,58 +582,13 @@ Ahorro
 
 <div id="toast" class="toast"></div>
 
-<script type="module">
+<script>
 
-import { initializeApp }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+let datos = JSON.parse(
+localStorage.getItem("ahorros")
+)||[];
 
-import {
-getFirestore,
-collection,
-addDoc,
-getDocs,
-doc,
-deleteDoc,
-updateDoc,
-getDoc
-}
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-
-apiKey:
-"AIzaSyDbGafoJEyBDRu3CUNErYWWMiTTopFSw4Y",
-
-authDomain:
-"dashboard-ahorros.firebaseapp.com",
-
-projectId:
-"dashboard-ahorros",
-
-storageBucket:
-"dashboard-ahorros.firebasestorage.app",
-
-messagingSenderId:
-"182706196966",
-
-appId:
-"1:182706196966:web:582eb05fe372327f720627"
-
-};
-
-const app =
-initializeApp(firebaseConfig);
-
-const db =
-getFirestore(app);
-
-let editId=null;
-
-let datosGlobal=[];
-
-let archivosEvidencia=[];
-
-let ordenActual="";
+let archivosActuales=[];
 
 function mostrarToast(msg){
 
@@ -575,16 +604,15 @@ t.style.display="none";
 
 }
 
-window.toggleDarkMode=()=>{
+function toggleDarkMode(){
 
 document.body.classList.toggle("dark");
 
-};
+}
 
-window.agregarArchivo=()=>{
+function agregarArchivo(){
 
-let input=
-document.getElementById("evidencia");
+let input=document.getElementById("evidencia");
 
 if(!input.files.length){
 
@@ -596,145 +624,180 @@ return;
 
 Array.from(input.files).forEach(file=>{
 
-let existe=
-archivosEvidencia.some(
-a=>a.nombre===file.name
-);
+let reader=new FileReader();
 
-if(!existe){
+reader.onload=function(e){
 
-archivosEvidencia.push({
+archivosActuales.push({
 
 nombre:file.name,
 
-url:URL.createObjectURL(file)
+tipo:file.type,
+
+url:e.target.result
 
 });
 
-}
-
-});
-
-renderArchivos();
-
-input.value="";
+renderPreview();
 
 };
 
-function renderArchivos(){
+reader.readAsDataURL(file);
 
-listaArchivos.innerHTML="";
+});
 
-archivosEvidencia.forEach((a,index)=>{
+input.value="";
 
-listaArchivos.innerHTML+=`
+}
 
-<div class="archivo-item">
+function renderPreview(){
 
-<a class="link-archivo"
-href="${a.url}"
-target="_blank">
+previewArchivos.innerHTML="";
 
-${a.nombre}
+archivosActuales.forEach((a,index)=>{
 
-</a>
+let html="";
+
+if(a.tipo.includes("image")){
+
+html=`
+<div class="preview-item">
 
 <button
+class="preview-remove"
 onclick="eliminarArchivo(${index})">
 
 X
 
 </button>
 
-</div>
+<a href="${a.url}" target="_blank">
 
+<img src="${a.url}">
+
+</a>
+
+</div>
 `;
+
+}else{
+
+html=`
+<div class="preview-item">
+
+<button
+class="preview-remove"
+onclick="eliminarArchivo(${index})">
+
+X
+
+</button>
+
+<a href="${a.url}"
+target="_blank"
+class="preview-file">
+
+${a.nombre}
+
+</a>
+
+</div>
+`;
+
+}
+
+previewArchivos.innerHTML+=html;
 
 });
 
 }
 
-window.eliminarArchivo=(index)=>{
+function eliminarArchivo(index){
 
-let confirmar=
-confirm(
-"¿Eliminar este archivo?"
+let confirmar=confirm(
+"¿Eliminar archivo?"
 );
 
 if(!confirmar) return;
 
-archivosEvidencia.splice(index,1);
+archivosActuales.splice(index,1);
 
-renderArchivos();
-
-};
-
-window.guardar=async()=>{
-
-let data={
-
-proyecto:proyecto.value,
-
-responsable:responsable.value,
-
-unidad:unidad.value,
-
-tipo:tipo.value,
-
-estatus:estatus.value,
-
-descripcion:descripcion.value,
-
-comentarios:comentarios.value,
-
-evidencia:
-JSON.stringify(archivosEvidencia),
-
-fecha:fecha.value,
-
-original:
-parseFloat(original.value),
-
-optimizado:
-parseFloat(optimizado.value)
-
-};
-
-data.ahorro=
-data.original-data.optimizado;
-
-if(editId){
-
-await updateDoc(
-doc(db,"ahorros",editId),
-data
-);
-
-editId=null;
-
-}else{
-
-await addDoc(
-collection(db,"ahorros"),
-data
-);
+renderPreview();
 
 }
 
-mostrarToast("Registro guardado");
+function guardar(){
+
+let original=
+parseFloat(
+document.getElementById("original").value
+);
+
+let optimizado=
+parseFloat(
+document.getElementById("optimizado").value
+);
+
+let ahorro=
+original-optimizado;
+
+let registro={
+
+id:Date.now(),
+
+fecha:
+document.getElementById("fecha").value,
+
+proyecto:
+document.getElementById("proyecto").value,
+
+responsable:
+document.getElementById("responsable").value,
+
+unidad:
+document.getElementById("unidad").value,
+
+tipo:
+document.getElementById("tipo").value,
+
+estatus:
+document.getElementById("estatus").value,
+
+descripcion:
+document.getElementById("descripcion").value,
+
+comentarios:
+document.getElementById("comentarios").value,
+
+original,
+
+optimizado,
+
+ahorro,
+
+evidencias:
+archivosActuales
+
+};
+
+datos.push(registro);
+
+localStorage.setItem(
+"ahorros",
+JSON.stringify(datos)
+);
+
+mostrarToast(
+"Registro guardado correctamente"
+);
 
 limpiar();
 
 cargar();
 
-};
+}
 
-window.cargar=async()=>{
-
-let snapshot=
-await getDocs(
-collection(db,"ahorros")
-);
+function cargar(){
 
 tabla.innerHTML="";
 
@@ -742,69 +805,13 @@ let totalOriginal=0;
 
 let totalAhorro=0;
 
-let proyectos=new Set();
-
-let responsables=new Set();
-
 let ahorroProyecto={};
 
 let ahorroMensual={};
 
 let top={};
 
-let fProyecto=
-filtroProyecto.value;
-
-let fResponsable=
-filtroResponsable.value;
-
-let fUnidad=
-filtroUnidad.value;
-
-let fTipo=
-filtroTipo.value;
-
-let busqueda=
-busquedaRapida.value.toLowerCase();
-
-datosGlobal=[];
-
-snapshot.forEach(docu=>{
-
-let d=docu.data();
-
-let texto=(
-
-(d.proyecto||"")+" "+
-(d.responsable||"")+" "+
-(d.descripcion||"")
-
-).toLowerCase();
-
-if(busqueda && !texto.includes(busqueda))
-return;
-
-if(fProyecto!=="todos"
-&& d.proyecto!==fProyecto)
-return;
-
-if(fResponsable!=="todos"
-&& d.responsable!==fResponsable)
-return;
-
-if(fUnidad!=="todos"
-&& d.unidad!==fUnidad)
-return;
-
-if(fTipo!=="todos"
-&& d.tipo!==fTipo)
-return;
-
-datosGlobal.push(d);
-
-proyectos.add(d.proyecto);
-
-responsables.add(d.responsable);
+datos.forEach(d=>{
 
 totalOriginal+=d.original;
 
@@ -814,8 +821,7 @@ ahorroProyecto[d.proyecto]=
 (ahorroProyecto[d.proyecto]||0)
 +d.ahorro;
 
-let mes=
-d.fecha.substring(0,7);
+let mes=d.fecha.substring(0,7);
 
 ahorroMensual[mes]=
 (ahorroMensual[mes]||0)
@@ -824,6 +830,37 @@ ahorroMensual[mes]=
 top[d.responsable]=
 (top[d.responsable]||0)
 +d.ahorro;
+
+let evidenciasHTML="";
+
+d.evidencias.forEach(a=>{
+
+if(a.tipo.includes("image")){
+
+evidenciasHTML+=`
+<a href="${a.url}" target="_blank">
+<img
+src="${a.url}"
+style="width:50px;height:50px;border-radius:8px;">
+</a>
+`;
+
+}else{
+
+evidenciasHTML+=`
+<a
+class="link-archivo"
+href="${a.url}"
+target="_blank">
+
+${a.nombre}
+
+</a>
+`;
+
+}
+
+});
 
 let badge="badge-propuesto";
 
@@ -836,43 +873,7 @@ badge="badge-aprobado";
 if(d.estatus==="Implementado")
 badge="badge-implementado";
 
-let evidenciasHTML=
-'<div class="galeria">';
-
-try{
-
-let archivos=
-JSON.parse(d.evidencia);
-
-archivos.forEach(a=>{
-
-if(a.nombre.match(/jpg|png|jpeg/i)){
-
-evidenciasHTML += `
-<a href="${a.url}" target="_blank">
-<img src="${a.url}">
-</a>
-`;
-
-}else{
-
-evidenciasHTML += `
-<a class="link-archivo"
-href="${a.url}"
-target="_blank">
-${a.nombre}
-</a>
-`;
-
-}
-
-});
-
-}catch{}
-
-evidenciasHTML+='</div>';
-
-tabla.innerHTML += `
+tabla.innerHTML+=`
 
 <tr>
 
@@ -893,31 +894,25 @@ ${d.estatus}
 </td>
 
 <td>
+
 ${d.descripcion}
+
 <br>
-<small>${d.comentarios||""}</small>
+
+<small>
+${d.comentarios||""}
+</small>
+
 </td>
 
 <td>${evidenciasHTML}</td>
 
-<td>${d.original}</td>
-
-<td>${d.optimizado}</td>
-
-<td>${d.ahorro}</td>
+<td>$${d.ahorro}</td>
 
 <td>
 
 <button
-onclick="editar('${docu.id}')">
-
-Editar
-
-</button>
-
-<button
-class="btn-danger"
-onclick="eliminar('${docu.id}')">
+onclick="eliminarRegistro(${d.id})">
 
 Eliminar
 
@@ -932,41 +927,21 @@ Eliminar
 });
 
 kpiOriginal.innerText=
-totalOriginal.toLocaleString();
+"$"+totalOriginal.toLocaleString();
 
 kpiAhorro.innerText=
-totalAhorro.toLocaleString();
+"$"+totalAhorro.toLocaleString();
 
 let porcentaje=
 totalOriginal
 ? ((totalAhorro/totalOriginal)*100)
-: 0;
+:0;
 
 kpiPorcentaje.innerText=
 porcentaje.toFixed(2)+"%";
 
 ahorroAnual.innerText=
 "$"+totalAhorro.toLocaleString();
-
-filtroProyecto.innerHTML=
-'<option value="todos">Todos los proyectos</option>';
-
-proyectos.forEach(p=>{
-
-filtroProyecto.innerHTML +=
-`<option>${p}</option>`;
-
-});
-
-filtroResponsable.innerHTML=
-'<option value="todos">Todos los responsables</option>';
-
-responsables.forEach(r=>{
-
-filtroResponsable.innerHTML +=
-`<option>${r}</option>`;
-
-});
 
 renderGeneral(
 totalOriginal,
@@ -988,7 +963,7 @@ Object.entries(top)
 .slice(0,5)
 .forEach(t=>{
 
-html += `
+html+=`
 <div>
 ${t[0]} → $${t[1].toLocaleString()}
 </div>
@@ -998,7 +973,7 @@ ${t[0]} → $${t[1].toLocaleString()}
 
 topResponsables.innerHTML=html;
 
-};
+}
 
 function renderGeneral(o,a){
 
@@ -1080,7 +1055,7 @@ labels:Object.keys(data),
 
 datasets:[{
 
-label:"Ahorro Mensual",
+label:"Ahorro mensual",
 
 data:Object.values(data),
 
@@ -1096,12 +1071,10 @@ fill:false
 
 }
 
-window.exportarExcel=()=>{
+function exportarExcel(){
 
 let ws=
-XLSX.utils.json_to_sheet(
-datosGlobal
-);
+XLSX.utils.json_to_sheet(datos);
 
 let wb=
 XLSX.utils.book_new();
@@ -1117,16 +1090,13 @@ wb,
 "ahorros.xlsx"
 );
 
-};
+}
 
-window.exportarPDF=()=>{
+function exportarPDF(){
 
 const { jsPDF } = window.jspdf;
 
-let doc=
-new jsPDF();
-
-doc.setFontSize(18);
+let doc=new jsPDF();
 
 doc.text(
 "Reporte Dashboard Ahorros",
@@ -1135,7 +1105,8 @@ doc.text(
 );
 
 doc.text(
-"Total ahorro: $"+kpiAhorro.innerText,
+"Total ahorro: "+
+kpiAhorro.innerText,
 20,
 40
 );
@@ -1144,109 +1115,45 @@ doc.save(
 "reporte-ahorros.pdf"
 );
 
-mostrarToast("PDF generado");
-
-};
-
-window.editar=async(id)=>{
-
-let docSnap=
-await getDoc(
-doc(db,"ahorros",id)
-);
-
-let d=
-docSnap.data();
-
-proyecto.value=d.proyecto;
-
-responsable.value=d.responsable;
-
-unidad.value=d.unidad;
-
-tipo.value=d.tipo;
-
-estatus.value=d.estatus;
-
-descripcion.value=d.descripcion;
-
-comentarios.value=d.comentarios;
-
-fecha.value=d.fecha;
-
-original.value=d.original;
-
-optimizado.value=d.optimizado;
-
-try{
-
-archivosEvidencia=
-JSON.parse(d.evidencia);
-
-}catch{
-
-archivosEvidencia=[];
-
 }
 
-renderArchivos();
+function eliminarRegistro(id){
 
-editId=id;
-
-};
-
-window.eliminar=async(id)=>{
-
-let confirmar=
-confirm(
-"¿Seguro que deseas eliminar este registro?"
+let confirmar=confirm(
+"¿Eliminar registro?"
 );
 
 if(!confirmar) return;
 
-await deleteDoc(
-doc(db,"ahorros",id)
+datos=
+datos.filter(d=>d.id!==id);
+
+localStorage.setItem(
+"ahorros",
+JSON.stringify(datos)
 );
 
-mostrarToast("Registro eliminado");
+mostrarToast(
+"Registro eliminado"
+);
 
 cargar();
 
-};
-
-window.ordenar=(campo)=>{
-
-if(ordenActual===campo){
-
-datosGlobal.reverse();
-
-}else{
-
-datosGlobal.sort(
-(a,b)=>
-(b[campo]||0)
--(a[campo]||0)
-);
-
 }
-
-ordenActual=campo;
-
-};
 
 function limpiar(){
 
-proyecto.value="";
-responsable.value="";
-descripcion.value="";
-comentarios.value="";
-original.value="";
-optimizado.value="";
-fecha.value="";
+document.getElementById("proyecto").value="";
+document.getElementById("responsable").value="";
+document.getElementById("descripcion").value="";
+document.getElementById("comentarios").value="";
+document.getElementById("original").value="";
+document.getElementById("optimizado").value="";
+document.getElementById("fecha").value="";
 
-archivosEvidencia=[];
+archivosActuales=[];
 
-renderArchivos();
+renderPreview();
 
 }
 
