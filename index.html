@@ -213,6 +213,12 @@ display:none;
 z-index:9999;
 }
 
+.filtros-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+}
+
 </style>
 
 </head>
@@ -299,13 +305,55 @@ Guardar Registro
 
 <div class="card">
 
+<h2>Filtros</h2>
+
+<div class="filtros-grid">
+
 <input
 id="busqueda"
 placeholder="Buscar..."
 onkeyup="cargar()">
 
+<select id="filtroProyecto" onchange="cargar()">
+<option value="todos">Todos los proyectos</option>
+</select>
+
+<select id="filtroResponsable" onchange="cargar()">
+<option value="todos">Todos los responsables</option>
+</select>
+
+<select id="filtroUnidad" onchange="cargar()">
+<option value="todos">Todas las unidades</option>
+<option>F&P</option>
+<option>INST</option>
+</select>
+
+<select id="filtroTipo" onchange="cargar()">
+<option value="todos">Todos los tipos</option>
+<option>Material</option>
+<option>Mano de obra</option>
+<option>Tiempo</option>
+<option>Proveedor</option>
+</select>
+
+<input
+type="date"
+id="filtroInicio"
+onchange="cargar()">
+
+<input
+type="date"
+id="filtroFin"
+onchange="cargar()">
+
+</div>
+
 <button onclick="exportarExcel()">
 Exportar Excel
+</button>
+
+<button onclick="limpiarFiltros()">
+Limpiar Filtros
 </button>
 
 </div>
@@ -493,6 +541,11 @@ previewArchivos.innerHTML+=html;
 
 function eliminarArchivo(index){
 
+let confirmar=
+confirm("¿Eliminar archivo?");
+
+if(!confirmar) return;
+
 archivosActuales.splice(index,1);
 
 renderPreview();
@@ -583,11 +636,11 @@ localStorage.setItem(
 JSON.stringify(datos)
 );
 
-cargar();
-
 mostrarToast(
 "Registro cargado para edición"
 );
+
+cargar();
 
 }
 
@@ -606,6 +659,10 @@ localStorage.setItem(
 JSON.stringify(datos)
 );
 
+mostrarToast(
+"Registro eliminado"
+);
+
 cargar();
 
 }
@@ -617,16 +674,72 @@ tabla.innerHTML="";
 let totalOriginal=0;
 let totalAhorro=0;
 
+let proyectos=new Set();
+let responsables=new Set();
+
 let busquedaTexto=
 busqueda.value.toLowerCase();
 
+let proyectoFiltro=
+filtroProyecto.value;
+
+let responsableFiltro=
+filtroResponsable.value;
+
+let unidadFiltro=
+filtroUnidad.value;
+
+let tipoFiltro=
+filtroTipo.value;
+
+let fechaInicio=
+filtroInicio.value;
+
+let fechaFin=
+filtroFin.value;
+
 datos.forEach(d=>{
+
+proyectos.add(d.proyecto);
+responsables.add(d.responsable);
 
 let texto=
 JSON.stringify(d).toLowerCase();
 
-if(!texto.includes(busquedaTexto))
-return;
+if(
+busquedaTexto &&
+!texto.includes(busquedaTexto)
+) return;
+
+if(
+proyectoFiltro!=="todos" &&
+d.proyecto!==proyectoFiltro
+) return;
+
+if(
+responsableFiltro!=="todos" &&
+d.responsable!==responsableFiltro
+) return;
+
+if(
+unidadFiltro!=="todos" &&
+d.unidad!==unidadFiltro
+) return;
+
+if(
+tipoFiltro!=="todos" &&
+d.tipo!==tipoFiltro
+) return;
+
+if(
+fechaInicio &&
+d.fecha<fechaInicio
+) return;
+
+if(
+fechaFin &&
+d.fecha>fechaFin
+) return;
 
 totalOriginal+=d.original;
 totalAhorro+=d.ahorro;
@@ -728,6 +841,32 @@ Eliminar
 
 });
 
+filtroProyecto.innerHTML=
+'<option value="todos">Todos los proyectos</option>';
+
+[...proyectos].forEach(p=>{
+
+filtroProyecto.innerHTML+=`
+<option value="${p}">
+${p}
+</option>
+`;
+
+});
+
+filtroResponsable.innerHTML=
+'<option value="todos">Todos los responsables</option>';
+
+[...responsables].forEach(r=>{
+
+filtroResponsable.innerHTML+=`
+<option value="${r}">
+${r}
+</option>
+`;
+
+});
+
 kpiOriginal.innerText=
 "$"+totalOriginal.toLocaleString();
 
@@ -787,6 +926,26 @@ backgroundColor:[
 }
 
 });
+
+}
+
+function limpiarFiltros(){
+
+busqueda.value="";
+
+filtroProyecto.value="todos";
+
+filtroResponsable.value="todos";
+
+filtroUnidad.value="todos";
+
+filtroTipo.value="todos";
+
+filtroInicio.value="";
+
+filtroFin.value="";
+
+cargar();
 
 }
 
