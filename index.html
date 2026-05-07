@@ -34,16 +34,6 @@ background:#f9fafb;
 border-radius:10px;
 }
 
-h2{
-color:#1f2937;
-margin-bottom:15px;
-}
-
-h3{
-color:#374151;
-margin-bottom:10px;
-}
-
 .card{
 background:#ffffff;
 padding:20px;
@@ -91,58 +81,33 @@ color:white;
 font-weight:bold;
 }
 
-.kpi.orange{
+.orange{
 background:#ff6a00;
 }
 
-.kpi.blue{
+.blue{
 background:#2d7ff9;
 }
 
-.kpi.green{
+.green{
 background:#2ecc71;
 }
 
 table{
 width:100%;
 border-collapse:collapse;
-background:white;
 }
 
 th{
-background:#2c3e50;
+background:#1f2937;
 color:white;
 padding:10px;
-font-size:13px;
 }
 
 td{
 padding:8px;
 border-bottom:1px solid #e5e7eb;
 font-size:13px;
-vertical-align:top;
-}
-
-tr:hover{
-background:#f5f7fa;
-}
-
-td button{
-margin:2px;
-padding:5px 8px;
-font-size:12px;
-}
-
-td button:nth-child(1){
-background:#3498db;
-}
-
-td button:nth-child(2){
-background:#e74c3c;
-}
-
-canvas{
-margin-top:15px;
 }
 
 .archivo-item{
@@ -175,8 +140,6 @@ Dashboard de Ahorros
 
 <h2>📊 Dashboard Ahorros PRO MAX</h2>
 
-<!-- FORMULARIO -->
-
 <div class="card">
 
 <input id="proyecto" placeholder="Proyecto">
@@ -196,13 +159,14 @@ Dashboard de Ahorros
 </select>
 
 <textarea id="descripcion"
-placeholder="Descripción del ahorro o justificación"></textarea>
+placeholder="Descripción del ahorro"></textarea>
 
 <label><b>Evidencias</b></label>
 
-<input type="file" id="evidencia">
+<input type="file" id="evidencia" multiple>
 
-<button type="button" onclick="agregarArchivo()">
+<button type="button"
+onclick="agregarArchivo()">
 Agregar Archivo
 </button>
 
@@ -210,10 +174,12 @@ Agregar Archivo
 
 <input type="date" id="fecha">
 
-<input type="number" id="original"
+<input type="number"
+id="original"
 placeholder="Costo original">
 
-<input type="number" id="optimizado"
+<input type="number"
+id="optimizado"
 placeholder="Costo optimizado">
 
 <button onclick="guardar()">
@@ -226,33 +192,60 @@ Guardar
 
 <div class="card">
 
-<select id="filtroProyecto" onchange="cargar()">
-<option value="todos">Todos los proyectos</option>
+<select id="filtroProyecto"
+onchange="cargar()">
+<option value="todos">
+Todos los proyectos
+</option>
 </select>
 
-<select id="filtroResponsable" onchange="cargar()">
-<option value="todos">Todos los responsables</option>
+<select id="filtroResponsable"
+onchange="cargar()">
+<option value="todos">
+Todos los responsables
+</option>
 </select>
 
-<select id="filtroTipo" onchange="cargar()">
-<option value="todos">Todos los tipos</option>
-<option value="Material">Material</option>
-<option value="Mano de obra">Mano de obra</option>
-<option value="Tiempo">Tiempo</option>
-<option value="Proveedor">Proveedor</option>
+<select id="filtroTipo"
+onchange="cargar()">
+
+<option value="todos">
+Todos los tipos
+</option>
+
+<option value="Material">
+Material
+</option>
+
+<option value="Mano de obra">
+Mano de obra
+</option>
+
+<option value="Tiempo">
+Tiempo
+</option>
+
+<option value="Proveedor">
+Proveedor
+</option>
+
 </select>
 
-<input type="date" id="filtroInicio" onchange="cargar()">
+<input type="date"
+id="filtroInicio"
+onchange="cargar()">
 
-<input type="date" id="filtroFin" onchange="cargar()">
+<input type="date"
+id="filtroFin"
+onchange="cargar()">
 
 <button onclick="exportarExcel()">
-Exportar a Excel
+Exportar Excel
 </button>
 
 </div>
 
-<!-- KPIs -->
+<!-- KPIS -->
 
 <div class="card kpis">
 
@@ -273,14 +266,12 @@ Exportar a Excel
 
 </div>
 
-<!-- GRAFICA GENERAL -->
+<!-- GRAFICAS -->
 
 <div class="card">
 <h3>Gráfica General</h3>
 <canvas id="chartGeneral"></canvas>
 </div>
-
-<!-- GRAFICA PROYECTO -->
 
 <div class="card">
 <h3>Gráfica por Proyecto</h3>
@@ -296,6 +287,7 @@ Exportar a Excel
 <thead>
 
 <tr>
+
 <th>Fecha</th>
 <th>Proyecto</th>
 <th>Responsable</th>
@@ -307,6 +299,7 @@ Exportar a Excel
 <th>Optimizado</th>
 <th>Ahorro</th>
 <th>Acciones</th>
+
 </tr>
 
 </thead>
@@ -337,22 +330,40 @@ getDoc
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-apiKey: "AIzaSyDbGafoJEyBDRu3CUNErYWWMiTTopFSw4Y",
-authDomain: "dashboard-ahorros.firebaseapp.com",
-projectId: "dashboard-ahorros",
-storageBucket: "dashboard-ahorros.firebasestorage.app",
-messagingSenderId: "182706196966",
-appId: "1:182706196966:web:582eb05fe372327f720627"
+
+apiKey:
+"AIzaSyDbGafoJEyBDRu3CUNErYWWMiTTopFSw4Y",
+
+authDomain:
+"dashboard-ahorros.firebaseapp.com",
+
+projectId:
+"dashboard-ahorros",
+
+storageBucket:
+"dashboard-ahorros.firebasestorage.app",
+
+messagingSenderId:
+"182706196966",
+
+appId:
+"1:182706196966:web:582eb05fe372327f720627"
+
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app =
+initializeApp(firebaseConfig);
+
+const db =
+getFirestore(app);
 
 let editId=null;
+
 let datosGlobal=[];
+
 let archivosEvidencia=[];
 
-/* ARCHIVOS */
+/* AGREGAR ARCHIVOS */
 
 window.agregarArchivo=()=>{
 
@@ -360,22 +371,40 @@ let input =
 document.getElementById("evidencia");
 
 if(!input.files.length){
-alert("Selecciona un archivo");
+
+alert("Selecciona archivo");
+
 return;
+
 }
 
-let archivo =
-input.files[0];
+let nuevosArchivos =
+Array.from(input.files);
 
-archivosEvidencia.push(
-archivo.name
+nuevosArchivos.forEach(archivo=>{
+
+let existe =
+archivosEvidencia.some(
+a => a.nombre === archivo.name
 );
+
+if(!existe){
+
+archivosEvidencia.push({
+nombre: archivo.name
+});
+
+}
+
+});
 
 renderArchivos();
 
 input.value="";
 
 };
+
+/* RENDER ARCHIVOS */
 
 function renderArchivos(){
 
@@ -390,7 +419,7 @@ contenedor.innerHTML += `
 
 <div class="archivo-item">
 
-<span>${a}</span>
+<span>${a.nombre}</span>
 
 <button
 type="button"
@@ -405,6 +434,8 @@ X
 });
 
 }
+
+/* ELIMINAR ARCHIVO */
 
 window.eliminarArchivo=(index)=>{
 
@@ -421,13 +452,19 @@ window.guardar=async()=>{
 let data={
 
 proyecto:proyecto.value,
+
 responsable:responsable.value,
+
 unidad:unidad.value,
+
 tipo:tipo.value,
+
 descripcion:descripcion.value,
 
 evidencia:
-archivosEvidencia.join(", "),
+archivosEvidencia
+.map(a=>a.nombre)
+.join(", "),
 
 fecha:fecha.value,
 
@@ -443,7 +480,9 @@ if(!data.proyecto
 || !data.responsable
 || !data.fecha){
 
-return alert("Faltan datos");
+alert("Faltan datos");
+
+return;
 
 }
 
@@ -478,7 +517,7 @@ cargar();
 
 window.cargar=async()=>{
 
-let snapshot=
+let snapshot =
 await getDocs(
 collection(db,"ahorros")
 );
@@ -489,23 +528,24 @@ let totalOriginal=0;
 let totalAhorro=0;
 
 let proyectos=new Set();
+
 let responsables=new Set();
 
 let ahorroPorProyecto={};
 
-let fProyecto=
+let fProyecto =
 filtroProyecto.value;
 
-let fResponsable=
+let fResponsable =
 filtroResponsable.value;
 
-let fTipo=
+let fTipo =
 filtroTipo.value;
 
-let fInicio=
+let fInicio =
 filtroInicio.value;
 
-let fFin=
+let fFin =
 filtroFin.value;
 
 datosGlobal=[];
@@ -554,7 +594,7 @@ ahorroPorProyecto[d.proyecto]=
 
 /* TABLA */
 
-tabla.innerHTML+=`
+tabla.innerHTML += `
 
 <tr>
 
@@ -580,11 +620,13 @@ tabla.innerHTML+=`
 
 <td>
 
-<button onclick="editar('${docu.id}')">
+<button
+onclick="editar('${docu.id}')">
 Editar
 </button>
 
-<button onclick="eliminar('${docu.id}')">
+<button
+onclick="eliminar('${docu.id}')">
 Eliminar
 </button>
 
@@ -596,7 +638,7 @@ Eliminar
 
 });
 
-/* KPIs */
+/* KPIS */
 
 kpiOriginal.innerText=
 totalOriginal;
@@ -606,30 +648,30 @@ totalAhorro;
 
 kpiPorcentaje.innerText=
 totalOriginal
-? ((totalAhorro/totalOriginal)
-*100).toFixed(2)+"%"
+? (
+(totalAhorro/totalOriginal)
+*100
+).toFixed(2)+"%"
 : "0%";
 
-/* FILTRO PROYECTO */
+/* FILTROS */
 
 filtroProyecto.innerHTML=
 '<option value="todos">Todos los proyectos</option>';
 
 proyectos.forEach(p=>{
 
-filtroProyecto.innerHTML+=
+filtroProyecto.innerHTML +=
 `<option>${p}</option>`;
 
 });
-
-/* FILTRO RESPONSABLE */
 
 filtroResponsable.innerHTML=
 '<option value="todos">Todos los responsables</option>';
 
 responsables.forEach(r=>{
 
-filtroResponsable.innerHTML+=
+filtroResponsable.innerHTML +=
 `<option>${r}</option>`;
 
 });
@@ -654,7 +696,7 @@ function renderGeneral(o,a){
 if(window.chart1)
 chart1.destroy();
 
-window.chart1=
+window.chart1 =
 new Chart(chartGeneral,{
 
 type:"bar",
@@ -690,7 +732,7 @@ function renderProyecto(data){
 if(window.chart2)
 chart2.destroy();
 
-window.chart2=
+window.chart2 =
 new Chart(chartProyecto,{
 
 type:"bar",
@@ -723,12 +765,12 @@ backgroundColor:
 
 window.exportarExcel=()=>{
 
-let ws=
+let ws =
 XLSX.utils.json_to_sheet(
 datosGlobal
 );
 
-let wb=
+let wb =
 XLSX.utils.book_new();
 
 XLSX.utils.book_append_sheet(
@@ -748,7 +790,7 @@ wb,
 
 window.editar=async(id)=>{
 
-let docSnap=
+let docSnap =
 await getDoc(
 doc(db,"ahorros",id)
 );
@@ -756,28 +798,35 @@ doc(db,"ahorros",id)
 let d=
 docSnap.data();
 
-proyecto.value=d.proyecto;
+proyecto.value=
+d.proyecto;
 
 responsable.value=
 d.responsable;
 
-unidad.value=d.unidad;
+unidad.value=
+d.unidad;
 
-tipo.value=d.tipo;
+tipo.value=
+d.tipo;
 
 descripcion.value=
 d.descripcion;
 
-fecha.value=d.fecha;
+fecha.value=
+d.fecha;
 
-original.value=d.original;
+original.value=
+d.original;
 
 optimizado.value=
 d.optimizado;
 
 archivosEvidencia=
 d.evidencia
-? d.evidencia.split(", ")
+? d.evidencia
+.split(", ")
+.map(nombre=>({nombre}))
 : [];
 
 renderArchivos();
@@ -821,7 +870,5 @@ cargar();
 
 </script>
 
-</body>
-</html>
 </body>
 </html>
