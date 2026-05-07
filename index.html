@@ -1,42 +1,58 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Dashboard Ahorros FLUTEC PRO MAX</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 
-body{
-font-family:'Segoe UI',Arial,sans-serif;
-background:#e5e7eb;
+*{
 margin:0;
-color:#2c3e50;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Segoe UI',sans-serif;
+background:#eef2f7;
+color:#1f2937;
 }
 
 .header{
 background:#1f2937;
-color:white;
 padding:15px 25px;
 display:flex;
 justify-content:space-between;
 align-items:center;
 flex-wrap:wrap;
-gap:10px;
+color:white;
+box-shadow:0 2px 10px rgba(0,0,0,.2);
+}
+
+.logo-area{
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+.logo-area img{
+height:60px;
+background:white;
+padding:5px;
+border-radius:10px;
 }
 
 .container{
-max-width:1600px;
-margin:20px auto;
+max-width:1700px;
+margin:auto;
 padding:20px;
 }
 
@@ -44,23 +60,27 @@ padding:20px;
 background:white;
 padding:20px;
 margin-bottom:20px;
-border-radius:12px;
-box-shadow:0 2px 10px rgba(0,0,0,0.1);
+border-radius:15px;
+box-shadow:0 4px 15px rgba(0,0,0,.08);
+}
+
+h2,h3{
+margin-bottom:15px;
 }
 
 input,
 select,
 textarea{
 width:100%;
-padding:10px;
-margin-top:8px;
-border-radius:8px;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
 border:1px solid #d1d5db;
-box-sizing:border-box;
+font-size:14px;
 }
 
 textarea{
-min-height:80px;
+min-height:90px;
 resize:vertical;
 }
 
@@ -68,14 +88,16 @@ button{
 background:#ff6a00;
 color:white;
 border:none;
-padding:10px 15px;
-border-radius:8px;
+padding:12px 16px;
+border-radius:10px;
 cursor:pointer;
 margin-top:10px;
 font-weight:bold;
+transition:.2s;
 }
 
 button:hover{
+transform:scale(1.02);
 opacity:.9;
 }
 
@@ -91,11 +113,12 @@ flex-wrap:wrap;
 
 .kpi{
 flex:1;
-padding:20px;
-border-radius:12px;
+min-width:220px;
+padding:25px;
+border-radius:15px;
 color:white;
 text-align:center;
-min-width:200px;
+font-size:18px;
 }
 
 .orange{
@@ -112,12 +135,12 @@ background:#16a34a;
 
 .kpi-big{
 background:linear-gradient(90deg,#ff6a00,#ff8c00);
+padding:35px;
+border-radius:20px;
 color:white;
-padding:30px;
-font-size:40px;
+font-size:42px;
 font-weight:bold;
 text-align:center;
-border-radius:12px;
 margin-bottom:20px;
 }
 
@@ -130,32 +153,86 @@ font-size:13px;
 th{
 background:#1f2937;
 color:white;
-padding:10px;
-cursor:pointer;
+padding:12px;
 }
 
 td{
-padding:10px;
+padding:12px;
 border-bottom:1px solid #e5e7eb;
 vertical-align:top;
 }
 
-.link-archivo{
-display:block;
-margin-bottom:5px;
-color:#2563eb;
-text-decoration:none;
-font-size:12px;
+.preview-grid{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+margin-top:10px;
 }
 
-.archivo-item{
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:8px;
+.preview-item{
+position:relative;
 background:#f3f4f6;
-margin-top:5px;
-border-radius:8px;
+padding:6px;
+border-radius:12px;
+}
+
+.preview-item img{
+width:90px;
+height:90px;
+object-fit:cover;
+border-radius:10px;
+}
+
+.preview-remove{
+position:absolute;
+top:-8px;
+right:-8px;
+width:22px;
+height:22px;
+border-radius:50%;
+background:red;
+color:white;
+font-size:11px;
+padding:0;
+}
+
+.preview-file{
+width:90px;
+height:90px;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+font-size:11px;
+background:white;
+padding:5px;
+border-radius:10px;
+text-decoration:none;
+color:#1f2937;
+}
+
+.badge{
+padding:6px 12px;
+border-radius:20px;
+color:white;
+font-size:11px;
+font-weight:bold;
+}
+
+.badge-propuesto{
+background:#2563eb;
+}
+
+.badge-revision{
+background:#f59e0b;
+}
+
+.badge-aprobado{
+background:#16a34a;
+}
+
+.badge-implementado{
+background:#7c3aed;
 }
 
 .toast{
@@ -192,78 +269,6 @@ border:1px solid #4b5563;
 color:white;
 }
 
-.badge{
-padding:5px 10px;
-border-radius:20px;
-font-size:12px;
-font-weight:bold;
-color:white;
-}
-
-.badge-propuesto{
-background:#2563eb;
-}
-
-.badge-revision{
-background:#f59e0b;
-}
-
-.badge-aprobado{
-background:#16a34a;
-}
-
-.badge-implementado{
-background:#7c3aed;
-}
-
-.preview-grid{
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-margin-top:10px;
-}
-
-.preview-item{
-position:relative;
-background:#f3f4f6;
-padding:5px;
-border-radius:10px;
-}
-
-.preview-item img{
-width:90px;
-height:90px;
-object-fit:cover;
-border-radius:8px;
-}
-
-.preview-remove{
-position:absolute;
-top:-8px;
-right:-8px;
-background:red;
-color:white;
-border:none;
-border-radius:50%;
-width:22px;
-height:22px;
-font-size:11px;
-cursor:pointer;
-}
-
-.preview-file{
-width:90px;
-height:90px;
-display:flex;
-align-items:center;
-justify-content:center;
-text-align:center;
-font-size:11px;
-background:white;
-border-radius:8px;
-padding:5px;
-}
-
 @media(max-width:900px){
 
 .kpis{
@@ -285,15 +290,13 @@ overflow:auto;
 
 <div class="header">
 
-<div style="display:flex;align-items:center;gap:15px;">
+<div class="logo-area">
 
-<img
-src="https://github.com/Jeremy-Villegas/dashboard-ahorros/blob/main/LOGO%20FLUTEC.png?raw=true"
-style="height:60px;background:white;padding:5px;border-radius:10px;">
+<img src="https://github.com/Jeremy-Villegas/dashboard-ahorros/blob/main/LOGO%20FLUTEC.png?raw=true">
 
 <div>
 
-<div style="font-size:24px;font-weight:bold;">
+<div style="font-size:26px;font-weight:bold;">
 Dashboard de Ahorros
 </div>
 
@@ -305,19 +308,13 @@ FLUTEC PRO MAX
 
 </div>
 
-<div>
-
 <button onclick="toggleDarkMode()">
 🌙 Dark Mode
 </button>
 
 </div>
 
-</div>
-
 <div class="container">
-
-<h2>📊 Dashboard Ejecutivo de Ahorros</h2>
 
 <div class="kpi-big">
 
@@ -331,79 +328,52 @@ FLUTEC PRO MAX
 
 <div class="card">
 
+<h2>➕ Nuevo Registro</h2>
+
 <input id="proyecto" placeholder="Proyecto">
 
 <input id="responsable" placeholder="Responsable">
 
 <select id="unidad">
-
 <option>F&P</option>
-
 <option>INST</option>
-
 </select>
 
 <select id="tipo">
-
 <option>Material</option>
-
 <option>Mano de obra</option>
-
 <option>Tiempo</option>
-
 <option>Proveedor</option>
-
 </select>
 
 <select id="estatus">
-
 <option>Propuesto</option>
-
 <option>En revisión</option>
-
 <option>Aprobado</option>
-
 <option>Implementado</option>
-
 </select>
 
-<textarea
-id="descripcion"
-placeholder="Descripción del ahorro"></textarea>
+<textarea id="descripcion" placeholder="Descripción del ahorro"></textarea>
 
-<textarea
-id="comentarios"
-placeholder="Comentarios adicionales"></textarea>
-
-<label><b>Evidencias</b></label>
-
-<input
-type="file"
-id="evidencia"
-multiple>
-
-<button
-type="button"
-onclick="agregarArchivo()">
-
-Agregar Archivo
-
-</button>
-
-<div id="previewArchivos"
-class="preview-grid"></div>
+<textarea id="comentarios" placeholder="Comentarios"></textarea>
 
 <input type="date" id="fecha">
 
-<input
-type="number"
-id="original"
-placeholder="Costo original">
+<input type="number" id="original" placeholder="Costo Original">
 
-<input
-type="number"
-id="optimizado"
-placeholder="Costo optimizado">
+<input type="number" id="optimizado" placeholder="Costo Optimizado">
+
+<label style="margin-top:15px;display:block;">
+<b>Evidencias</b>
+</label>
+
+<input type="file" id="evidencia" multiple>
+
+<button type="button" onclick="agregarArchivo()">
+Agregar Archivo
+</button>
+
+<div id="previewArchivos" class="preview-grid"></div>
 
 <button onclick="guardar()">
 Guardar Registro
@@ -413,61 +383,33 @@ Guardar Registro
 
 <div class="card">
 
+<h2>🔎 Filtros</h2>
+
 <input
 id="busquedaRapida"
-placeholder="Buscar proyecto, responsable o descripción..."
+placeholder="Buscar..."
 onkeyup="cargar()">
 
-<select
-id="filtroProyecto"
-onchange="cargar()">
-
-<option value="todos">
-Todos los proyectos
-</option>
-
+<select id="filtroProyecto" onchange="cargar()">
+<option value="todos">Todos los proyectos</option>
 </select>
 
-<select
-id="filtroResponsable"
-onchange="cargar()">
-
-<option value="todos">
-Todos los responsables
-</option>
-
+<select id="filtroResponsable" onchange="cargar()">
+<option value="todos">Todos los responsables</option>
 </select>
 
-<select
-id="filtroUnidad"
-onchange="cargar()">
-
-<option value="todos">
-Todas las unidades
-</option>
-
+<select id="filtroUnidad" onchange="cargar()">
+<option value="todos">Todas las unidades</option>
 <option>F&P</option>
-
 <option>INST</option>
-
 </select>
 
-<select
-id="filtroTipo"
-onchange="cargar()">
-
-<option value="todos">
-Todos los tipos
-</option>
-
+<select id="filtroTipo" onchange="cargar()">
+<option value="todos">Todos los tipos</option>
 <option>Material</option>
-
 <option>Mano de obra</option>
-
 <option>Tiempo</option>
-
 <option>Proveedor</option>
-
 </select>
 
 <button onclick="exportarExcel()">
@@ -480,37 +422,28 @@ Exportar PDF
 
 </div>
 
-<div class="card kpis">
+<div class="kpis">
 
 <div class="kpi orange">
-
 <h3>Total Original</h3>
-
-<p id="kpiOriginal">0</p>
-
+<p id="kpiOriginal">$0</p>
 </div>
 
 <div class="kpi blue">
-
 <h3>Total Ahorro</h3>
-
-<p id="kpiAhorro">0</p>
-
+<p id="kpiAhorro">$0</p>
 </div>
 
 <div class="kpi green">
-
 <h3>% Ahorro</h3>
-
 <p id="kpiPorcentaje">0%</p>
-
 </div>
 
 </div>
 
 <div class="card">
 
-<h3>Gráfica General</h3>
+<h3>📈 Gráfica General</h3>
 
 <canvas id="chartGeneral"></canvas>
 
@@ -518,7 +451,7 @@ Exportar PDF
 
 <div class="card">
 
-<h3>Gráfica por Proyecto</h3>
+<h3>📊 Gráfica por Proyecto</h3>
 
 <canvas id="chartProyecto"></canvas>
 
@@ -526,7 +459,7 @@ Exportar PDF
 
 <div class="card">
 
-<h3>Gráfica Mensual</h3>
+<h3>📅 Gráfica Mensual</h3>
 
 <canvas id="chartMensual"></canvas>
 
@@ -534,13 +467,15 @@ Exportar PDF
 
 <div class="card">
 
-<h3>Top Responsables</h3>
+<h3>🏆 Top Responsables</h3>
 
 <div id="topResponsables"></div>
 
 </div>
 
 <div class="card">
+
+<h3>📋 Registros</h3>
 
 <table>
 
@@ -549,23 +484,14 @@ Exportar PDF
 <tr>
 
 <th>Fecha</th>
-
 <th>Proyecto</th>
-
 <th>Responsable</th>
-
 <th>Unidad</th>
-
 <th>Tipo</th>
-
 <th>Estatus</th>
-
 <th>Descripción</th>
-
 <th>Evidencias</th>
-
 <th>Ahorro</th>
-
 <th>Acciones</th>
 
 </tr>
@@ -584,7 +510,8 @@ Exportar PDF
 
 <script>
 
-let datos = JSON.parse(
+let datos=
+JSON.parse(
 localStorage.getItem("ahorros")
 )||[];
 
@@ -661,6 +588,7 @@ let html="";
 if(a.tipo.includes("image")){
 
 html=`
+
 <div class="preview-item">
 
 <button
@@ -678,11 +606,13 @@ X
 </a>
 
 </div>
+
 `;
 
 }else{
 
 html=`
+
 <div class="preview-item">
 
 <button
@@ -693,7 +623,8 @@ X
 
 </button>
 
-<a href="${a.url}"
+<a
+href="${a.url}"
 target="_blank"
 class="preview-file">
 
@@ -702,6 +633,7 @@ ${a.nombre}
 </a>
 
 </div>
+
 `;
 
 }
@@ -728,46 +660,31 @@ renderPreview();
 
 function guardar(){
 
-let original=
-parseFloat(
-document.getElementById("original").value
-);
+let original=parseFloat(original.value)||0;
 
-let optimizado=
-parseFloat(
-document.getElementById("optimizado").value
-);
+let optimizado=parseFloat(optimizado.value)||0;
 
-let ahorro=
-original-optimizado;
+let ahorro=original-optimizado;
 
 let registro={
 
 id:Date.now(),
 
-fecha:
-document.getElementById("fecha").value,
+fecha:fecha.value,
 
-proyecto:
-document.getElementById("proyecto").value,
+proyecto:proyecto.value,
 
-responsable:
-document.getElementById("responsable").value,
+responsable:responsable.value,
 
-unidad:
-document.getElementById("unidad").value,
+unidad:unidad.value,
 
-tipo:
-document.getElementById("tipo").value,
+tipo:tipo.value,
 
-estatus:
-document.getElementById("estatus").value,
+estatus:estatus.value,
 
-descripcion:
-document.getElementById("descripcion").value,
+descripcion:descripcion.value,
 
-comentarios:
-document.getElementById("comentarios").value,
+comentarios:comentarios.value,
 
 original,
 
@@ -775,8 +692,7 @@ optimizado,
 
 ahorro,
 
-evidencias:
-archivosActuales
+evidencias:archivosActuales
 
 };
 
@@ -788,10 +704,72 @@ JSON.stringify(datos)
 );
 
 mostrarToast(
-"Registro guardado correctamente"
+"Registro guardado"
 );
 
 limpiar();
+
+cargar();
+
+}
+
+function editarRegistro(id){
+
+let registro=
+datos.find(d=>d.id===id);
+
+if(!registro) return;
+
+proyecto.value=registro.proyecto;
+responsable.value=registro.responsable;
+unidad.value=registro.unidad;
+tipo.value=registro.tipo;
+estatus.value=registro.estatus;
+descripcion.value=registro.descripcion;
+comentarios.value=registro.comentarios;
+fecha.value=registro.fecha;
+original.value=registro.original;
+optimizado.value=registro.optimizado;
+
+archivosActuales=
+registro.evidencias || [];
+
+renderPreview();
+
+eliminarRegistro(id,false);
+
+mostrarToast(
+"Registro cargado para edición"
+);
+
+}
+
+function eliminarRegistro(id,mostrar=true){
+
+if(mostrar){
+
+let confirmar=
+confirm("¿Eliminar registro?");
+
+if(!confirmar) return;
+
+}
+
+datos=
+datos.filter(d=>d.id!==id);
+
+localStorage.setItem(
+"ahorros",
+JSON.stringify(datos)
+);
+
+if(mostrar){
+
+mostrarToast(
+"Registro eliminado"
+);
+
+}
 
 cargar();
 
@@ -802,19 +780,21 @@ function cargar(){
 tabla.innerHTML="";
 
 let totalOriginal=0;
-
 let totalAhorro=0;
 
 let ahorroProyecto={};
-
 let ahorroMensual={};
-
 let top={};
+
+let proyectos=new Set();
+let responsables=new Set();
 
 datos.forEach(d=>{
 
-totalOriginal+=d.original;
+proyectos.add(d.proyecto);
+responsables.add(d.responsable);
 
+totalOriginal+=d.original;
 totalAhorro+=d.ahorro;
 
 ahorroProyecto[d.proyecto]=
@@ -838,24 +818,34 @@ d.evidencias.forEach(a=>{
 if(a.tipo.includes("image")){
 
 evidenciasHTML+=`
+
 <a href="${a.url}" target="_blank">
+
 <img
 src="${a.url}"
-style="width:50px;height:50px;border-radius:8px;">
+style="
+width:50px;
+height:50px;
+border-radius:8px;
+margin:3px;
+">
+
 </a>
+
 `;
 
 }else{
 
 evidenciasHTML+=`
+
 <a
-class="link-archivo"
 href="${a.url}"
 target="_blank">
 
 ${a.nombre}
 
-</a>
+</a><br>
+
 `;
 
 }
@@ -888,9 +878,11 @@ tabla.innerHTML+=`
 <td>${d.tipo}</td>
 
 <td>
+
 <span class="badge ${badge}">
 ${d.estatus}
 </span>
+
 </td>
 
 <td>
@@ -905,13 +897,29 @@ ${d.comentarios||""}
 
 </td>
 
-<td>${evidenciasHTML}</td>
+<td>
 
-<td>$${d.ahorro}</td>
+${evidenciasHTML}
+
+</td>
+
+<td>
+
+$${d.ahorro.toLocaleString()}
+
+</td>
 
 <td>
 
 <button
+onclick="editarRegistro(${d.id})">
+
+Editar
+
+</button>
+
+<button
+class="btn-danger"
 onclick="eliminarRegistro(${d.id})">
 
 Eliminar
@@ -943,18 +951,11 @@ porcentaje.toFixed(2)+"%";
 ahorroAnual.innerText=
 "$"+totalAhorro.toLocaleString();
 
-renderGeneral(
-totalOriginal,
-totalAhorro
-);
+renderGeneral(totalOriginal,totalAhorro);
 
-renderProyecto(
-ahorroProyecto
-);
+renderProyecto(ahorroProyecto);
 
-renderMensual(
-ahorroMensual
-);
+renderMensual(ahorroMensual);
 
 let html="";
 
@@ -964,14 +965,47 @@ Object.entries(top)
 .forEach(t=>{
 
 html+=`
-<div>
-${t[0]} → $${t[1].toLocaleString()}
+
+<div style="
+padding:10px;
+background:#f3f4f6;
+margin-bottom:10px;
+border-radius:10px;
+">
+
+${t[0]}
+→
+<b>$${t[1].toLocaleString()}</b>
+
 </div>
+
 `;
 
 });
 
 topResponsables.innerHTML=html;
+
+filtroProyecto.innerHTML=
+'<option value="todos">Todos los proyectos</option>';
+
+proyectos.forEach(p=>{
+
+filtroProyecto.innerHTML+=`
+<option>${p}</option>
+`;
+
+});
+
+filtroResponsable.innerHTML=
+'<option value="todos">Todos los responsables</option>';
+
+responsables.forEach(r=>{
+
+filtroResponsable.innerHTML+=`
+<option>${r}</option>
+`;
+
+});
 
 }
 
@@ -1117,39 +1151,15 @@ doc.save(
 
 }
 
-function eliminarRegistro(id){
-
-let confirmar=confirm(
-"¿Eliminar registro?"
-);
-
-if(!confirmar) return;
-
-datos=
-datos.filter(d=>d.id!==id);
-
-localStorage.setItem(
-"ahorros",
-JSON.stringify(datos)
-);
-
-mostrarToast(
-"Registro eliminado"
-);
-
-cargar();
-
-}
-
 function limpiar(){
 
-document.getElementById("proyecto").value="";
-document.getElementById("responsable").value="";
-document.getElementById("descripcion").value="";
-document.getElementById("comentarios").value="";
-document.getElementById("original").value="";
-document.getElementById("optimizado").value="";
-document.getElementById("fecha").value="";
+proyecto.value="";
+responsable.value="";
+descripcion.value="";
+comentarios.value="";
+original.value="";
+optimizado.value="";
+fecha.value="";
 
 archivosActuales=[];
 
