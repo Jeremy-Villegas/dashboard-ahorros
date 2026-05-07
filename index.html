@@ -66,6 +66,10 @@ button:hover{
 background:#1c5fd4;
 }
 
+.btn-danger{
+background:#e74c3c;
+}
+
 .kpis{
 display:flex;
 gap:15px;
@@ -108,6 +112,7 @@ td{
 padding:8px;
 border-bottom:1px solid #e5e7eb;
 font-size:13px;
+vertical-align:top;
 }
 
 .archivo-item{
@@ -126,6 +131,18 @@ padding:5px 10px;
 font-size:12px;
 }
 
+.link-archivo{
+display:block;
+margin-bottom:4px;
+color:#2563eb;
+text-decoration:none;
+font-size:12px;
+}
+
+.link-archivo:hover{
+text-decoration:underline;
+}
+
 </style>
 </head>
 
@@ -139,6 +156,8 @@ Dashboard de Ahorros
 <div class="container">
 
 <h2>📊 Dashboard Ahorros PRO MAX</h2>
+
+<!-- FORM -->
 
 <div class="card">
 
@@ -163,7 +182,9 @@ placeholder="Descripción del ahorro"></textarea>
 
 <label><b>Evidencias</b></label>
 
-<input type="file" id="evidencia" multiple>
+<input type="file"
+id="evidencia"
+multiple>
 
 <button type="button"
 onclick="agregarArchivo()">
@@ -204,6 +225,23 @@ onchange="cargar()">
 <option value="todos">
 Todos los responsables
 </option>
+</select>
+
+<select id="filtroUnidad"
+onchange="cargar()">
+
+<option value="todos">
+Todas las unidades
+</option>
+
+<option value="F&P">
+F&P
+</option>
+
+<option value="INST">
+INST
+</option>
+
 </select>
 
 <select id="filtroTipo"
@@ -390,8 +428,12 @@ a => a.nombre === archivo.name
 
 if(!existe){
 
+let url =
+URL.createObjectURL(archivo);
+
 archivosEvidencia.push({
-nombre: archivo.name
+nombre: archivo.name,
+url:url
 });
 
 }
@@ -419,12 +461,21 @@ contenedor.innerHTML += `
 
 <div class="archivo-item">
 
-<span>${a.nombre}</span>
+<a
+class="link-archivo"
+href="${a.url}"
+target="_blank">
+
+${a.nombre}
+
+</a>
 
 <button
 type="button"
 onclick="eliminarArchivo(${index})">
+
 X
+
 </button>
 
 </div>
@@ -438,6 +489,13 @@ X
 /* ELIMINAR ARCHIVO */
 
 window.eliminarArchivo=(index)=>{
+
+let confirmar =
+confirm(
+"¿Seguro que deseas eliminar este archivo?"
+);
+
+if(!confirmar) return;
 
 archivosEvidencia.splice(index,1);
 
@@ -462,9 +520,7 @@ tipo:tipo.value,
 descripcion:descripcion.value,
 
 evidencia:
-archivosEvidencia
-.map(a=>a.nombre)
-.join(", "),
+JSON.stringify(archivosEvidencia),
 
 fecha:fecha.value,
 
@@ -539,6 +595,9 @@ filtroProyecto.value;
 let fResponsable =
 filtroResponsable.value;
 
+let fUnidad =
+filtroUnidad.value;
+
 let fTipo =
 filtroTipo.value;
 
@@ -570,6 +629,10 @@ if(fResponsable!=="todos"
 && d.responsable!==fResponsable)
 return;
 
+if(fUnidad!=="todos"
+&& d.unidad!==fUnidad)
+return;
+
 if(fTipo!=="todos"
 && d.tipo!==fTipo)
 return;
@@ -592,6 +655,38 @@ ahorroPorProyecto[d.proyecto]=
 (ahorroPorProyecto[d.proyecto]||0)
 +d.ahorro;
 
+/* ARCHIVOS */
+
+let evidenciasHTML="";
+
+try{
+
+let archivos=
+JSON.parse(d.evidencia);
+
+archivos.forEach(a=>{
+
+evidenciasHTML += `
+
+<a
+class="link-archivo"
+href="${a.url}"
+target="_blank">
+
+${a.nombre}
+
+</a>
+
+`;
+
+});
+
+}catch{
+
+evidenciasHTML=d.evidencia||"";
+
+}
+
 /* TABLA */
 
 tabla.innerHTML += `
@@ -610,7 +705,7 @@ tabla.innerHTML += `
 
 <td>${d.descripcion||""}</td>
 
-<td>${d.evidencia||""}</td>
+<td>${evidenciasHTML}</td>
 
 <td>${d.original}</td>
 
@@ -626,6 +721,7 @@ Editar
 </button>
 
 <button
+class="btn-danger"
 onclick="eliminar('${docu.id}')">
 Eliminar
 </button>
@@ -822,12 +918,16 @@ d.original;
 optimizado.value=
 d.optimizado;
 
+try{
+
 archivosEvidencia=
-d.evidencia
-? d.evidencia
-.split(", ")
-.map(nombre=>({nombre}))
-: [];
+JSON.parse(d.evidencia);
+
+}catch{
+
+archivosEvidencia=[];
+
+}
 
 renderArchivos();
 
@@ -838,6 +938,13 @@ editId=id;
 /* ELIMINAR */
 
 window.eliminar=async(id)=>{
+
+let confirmar =
+confirm(
+"¿Seguro que deseas eliminar este registro?"
+);
+
+if(!confirmar) return;
 
 await deleteDoc(
 doc(db,"ahorros",id)
