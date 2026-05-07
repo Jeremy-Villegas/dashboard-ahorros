@@ -145,6 +145,22 @@ canvas{
 margin-top:15px;
 }
 
+.archivo-item{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#f3f4f6;
+padding:8px;
+margin-top:5px;
+border-radius:6px;
+}
+
+.archivo-item button{
+background:#e74c3c;
+padding:5px 10px;
+font-size:12px;
+}
+
 </style>
 </head>
 
@@ -182,7 +198,15 @@ Dashboard de Ahorros
 <textarea id="descripcion"
 placeholder="Descripción del ahorro o justificación"></textarea>
 
-<input type="file" id="evidencia" multiple>
+<label><b>Evidencias</b></label>
+
+<input type="file" id="evidencia">
+
+<button type="button" onclick="agregarArchivo()">
+Agregar Archivo
+</button>
+
+<div id="listaArchivos"></div>
 
 <input type="date" id="fecha">
 
@@ -192,7 +216,9 @@ placeholder="Costo original">
 <input type="number" id="optimizado"
 placeholder="Costo optimizado">
 
-<button onclick="guardar()">Guardar</button>
+<button onclick="guardar()">
+Guardar
+</button>
 
 </div>
 
@@ -324,6 +350,69 @@ const db = getFirestore(app);
 
 let editId=null;
 let datosGlobal=[];
+let archivosEvidencia=[];
+
+/* ARCHIVOS */
+
+window.agregarArchivo=()=>{
+
+let input =
+document.getElementById("evidencia");
+
+if(!input.files.length){
+alert("Selecciona un archivo");
+return;
+}
+
+let archivo =
+input.files[0];
+
+archivosEvidencia.push(
+archivo.name
+);
+
+renderArchivos();
+
+input.value="";
+
+};
+
+function renderArchivos(){
+
+let contenedor =
+document.getElementById("listaArchivos");
+
+contenedor.innerHTML="";
+
+archivosEvidencia.forEach((a,index)=>{
+
+contenedor.innerHTML += `
+
+<div class="archivo-item">
+
+<span>${a}</span>
+
+<button
+type="button"
+onclick="eliminarArchivo(${index})">
+X
+</button>
+
+</div>
+
+`;
+
+});
+
+}
+
+window.eliminarArchivo=(index)=>{
+
+archivosEvidencia.splice(index,1);
+
+renderArchivos();
+
+};
 
 /* GUARDAR */
 
@@ -337,13 +426,16 @@ unidad:unidad.value,
 tipo:tipo.value,
 descripcion:descripcion.value,
 
-evidencia:[...evidencia.files]
-.map(f=>f.name)
-.join(", "),
+evidencia:
+archivosEvidencia.join(", "),
 
 fecha:fecha.value,
-original:parseFloat(original.value),
-optimizado:parseFloat(optimizado.value)
+
+original:
+parseFloat(original.value),
+
+optimizado:
+parseFloat(optimizado.value)
 
 };
 
@@ -377,6 +469,7 @@ data
 }
 
 limpiar();
+
 cargar();
 
 };
@@ -422,7 +515,10 @@ snapshot.forEach(docu=>{
 let d=docu.data();
 
 proyectos.add(d.proyecto);
-responsables.add(d.responsable);
+
+responsables.add(
+d.responsable
+);
 
 /* FILTROS */
 
@@ -449,6 +545,7 @@ return;
 datosGlobal.push(d);
 
 totalOriginal+=d.original;
+
 totalAhorro+=d.ahorro;
 
 ahorroPorProyecto[d.proyecto]=
@@ -600,15 +697,19 @@ type:"bar",
 
 data:{
 
-labels:Object.keys(data),
+labels:
+Object.keys(data),
 
 datasets:[{
 
-label:"Ahorro por proyecto",
+label:
+"Ahorro por proyecto",
 
-data:Object.values(data),
+data:
+Object.values(data),
 
-backgroundColor:"#2d7ff9"
+backgroundColor:
+"#2d7ff9"
 
 }]
 
@@ -656,13 +757,30 @@ let d=
 docSnap.data();
 
 proyecto.value=d.proyecto;
-responsable.value=d.responsable;
+
+responsable.value=
+d.responsable;
+
 unidad.value=d.unidad;
+
 tipo.value=d.tipo;
-descripcion.value=d.descripcion;
+
+descripcion.value=
+d.descripcion;
+
 fecha.value=d.fecha;
+
 original.value=d.original;
-optimizado.value=d.optimizado;
+
+optimizado.value=
+d.optimizado;
+
+archivosEvidencia=
+d.evidencia
+? d.evidencia.split(", ")
+: [];
+
+renderArchivos();
 
 editId=id;
 
@@ -691,6 +809,10 @@ original.value="";
 optimizado.value="";
 fecha.value="";
 
+archivosEvidencia=[];
+
+renderArchivos();
+
 }
 
 /* INICIO */
@@ -699,5 +821,7 @@ cargar();
 
 </script>
 
+</body>
+</html>
 </body>
 </html>
