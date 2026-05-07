@@ -105,6 +105,11 @@ opacity:.9;
 background:#dc2626;
 }
 
+.btn-edit{
+background:#2563eb;
+margin-bottom:5px;
+}
+
 .kpis{
 display:flex;
 gap:15px;
@@ -736,24 +741,28 @@ registro.evidencias || [];
 
 renderPreview();
 
-eliminarRegistro(id,false);
+datos=
+datos.filter(d=>d.id!==id);
+
+localStorage.setItem(
+"ahorros",
+JSON.stringify(datos)
+);
 
 mostrarToast(
 "Registro cargado para edición"
 );
 
+cargar();
+
 }
 
-function eliminarRegistro(id,mostrar=true){
-
-if(mostrar){
+function eliminarRegistro(id){
 
 let confirmar=
 confirm("¿Eliminar registro?");
 
 if(!confirmar) return;
-
-}
 
 datos=
 datos.filter(d=>d.id!==id);
@@ -763,13 +772,9 @@ localStorage.setItem(
 JSON.stringify(datos)
 );
 
-if(mostrar){
-
 mostrarToast(
 "Registro eliminado"
 );
-
-}
 
 cargar();
 
@@ -786,13 +791,7 @@ let ahorroProyecto={};
 let ahorroMensual={};
 let top={};
 
-let proyectos=new Set();
-let responsables=new Set();
-
 datos.forEach(d=>{
-
-proyectos.add(d.proyecto);
-responsables.add(d.responsable);
 
 totalOriginal+=d.original;
 totalAhorro+=d.ahorro;
@@ -912,11 +911,14 @@ $${d.ahorro.toLocaleString()}
 <td>
 
 <button
+class="btn-edit"
 onclick="editarRegistro(${d.id})">
 
 Editar
 
 </button>
+
+<br>
 
 <button
 class="btn-danger"
@@ -984,28 +986,6 @@ ${t[0]}
 });
 
 topResponsables.innerHTML=html;
-
-filtroProyecto.innerHTML=
-'<option value="todos">Todos los proyectos</option>';
-
-proyectos.forEach(p=>{
-
-filtroProyecto.innerHTML+=`
-<option>${p}</option>
-`;
-
-});
-
-filtroResponsable.innerHTML=
-'<option value="todos">Todos los responsables</option>';
-
-responsables.forEach(r=>{
-
-filtroResponsable.innerHTML+=`
-<option>${r}</option>
-`;
-
-});
 
 }
 
