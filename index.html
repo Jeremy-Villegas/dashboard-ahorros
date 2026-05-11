@@ -2,6 +2,7 @@
 <html lang="es">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -12,15 +13,10 @@
 
 <style>
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
 body{
 font-family:'Segoe UI',sans-serif;
 background:#eef2f7;
+margin:0;
 color:#1f2937;
 }
 
@@ -28,18 +24,12 @@ color:#1f2937;
 background:#1f2937;
 padding:15px 25px;
 display:flex;
-justify-content:space-between;
 align-items:center;
+gap:15px;
 color:white;
 }
 
-.logo-area{
-display:flex;
-align-items:center;
-gap:15px;
-}
-
-.logo-area img{
+.header img{
 height:60px;
 background:white;
 padding:5px;
@@ -47,31 +37,26 @@ border-radius:10px;
 }
 
 .container{
+padding:20px;
 max-width:1700px;
 margin:auto;
-padding:20px;
 }
 
 .card{
 background:white;
 padding:20px;
-margin-bottom:20px;
 border-radius:15px;
+margin-bottom:20px;
 box-shadow:0 4px 15px rgba(0,0,0,.08);
 }
 
-input,
-select,
-textarea{
+input,select,textarea{
 width:100%;
 padding:12px;
 margin-top:10px;
 border-radius:10px;
 border:1px solid #d1d5db;
-}
-
-textarea{
-min-height:80px;
+box-sizing:border-box;
 }
 
 button{
@@ -89,12 +74,12 @@ button:hover{
 opacity:.9;
 }
 
-.btn-danger{
-background:#dc2626;
-}
-
 .btn-edit{
 background:#2563eb;
+}
+
+.btn-danger{
+background:#dc2626;
 }
 
 .kpis{
@@ -106,11 +91,11 @@ margin-bottom:20px;
 
 .kpi{
 flex:1;
-min-width:220px;
 padding:25px;
 border-radius:15px;
 color:white;
 text-align:center;
+min-width:220px;
 }
 
 .orange{
@@ -130,7 +115,7 @@ background:linear-gradient(90deg,#ff6a00,#ff8c00);
 padding:35px;
 border-radius:20px;
 color:white;
-font-size:40px;
+font-size:38px;
 font-weight:bold;
 text-align:center;
 margin-bottom:20px;
@@ -193,27 +178,14 @@ top:-8px;
 right:-8px;
 width:22px;
 height:22px;
+border:none;
 border-radius:50%;
 background:red;
 color:white;
-border:none;
-font-size:11px;
 cursor:pointer;
 }
 
-.toast{
-position:fixed;
-top:20px;
-right:20px;
-background:#16a34a;
-color:white;
-padding:15px;
-border-radius:10px;
-display:none;
-z-index:9999;
-}
-
-.filtros-grid{
+.filtros{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 gap:15px;
@@ -227,20 +199,16 @@ gap:15px;
 
 <div class="header">
 
-<div class="logo-area">
-
 <img src="https://github.com/Jeremy-Villegas/dashboard-ahorros/blob/main/LOGO%20FLUTEC.png?raw=true">
 
 <div>
 
-<div style="font-size:26px;font-weight:bold;">
-Dashboard de Ahorros
+<div style="font-size:28px;font-weight:bold;">
+Dashboard Ahorros
 </div>
 
-<div style="font-size:13px;opacity:.8;">
+<div style="opacity:.8;">
 FLUTEC
-</div>
-
 </div>
 
 </div>
@@ -307,7 +275,7 @@ Guardar Registro
 
 <h2>Filtros</h2>
 
-<div class="filtros-grid">
+<div class="filtros">
 
 <input
 id="busqueda"
@@ -336,24 +304,13 @@ onkeyup="cargar()">
 <option>Proveedor</option>
 </select>
 
-<input
-type="date"
-id="filtroInicio"
-onchange="cargar()">
-
-<input
-type="date"
-id="filtroFin"
-onchange="cargar()">
+<input type="date" id="filtroInicio" onchange="cargar()">
+<input type="date" id="filtroFin" onchange="cargar()">
 
 </div>
 
 <button onclick="exportarExcel()">
 Exportar Excel
-</button>
-
-<button onclick="limpiarFiltros()">
-Limpiar Filtros
 </button>
 
 </div>
@@ -379,15 +336,11 @@ Limpiar Filtros
 
 <div class="card">
 
-<h3>Gráfica General</h3>
-
 <canvas id="chartGeneral"></canvas>
 
 </div>
 
 <div class="card">
-
-<h3>Registros</h3>
 
 <table>
 
@@ -417,58 +370,83 @@ Limpiar Filtros
 
 </div>
 
-<div id="toast" class="toast"></div>
+<script type="module">
 
-<script>
+import {
+initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
-let datos=
-JSON.parse(
-localStorage.getItem("ahorros")
-)||[];
+import {
 
+getFirestore,
+collection,
+addDoc,
+getDocs,
+deleteDoc,
+doc
+
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyDbGafoJEyBDRu3CUNErYWWMiTTopFSw4Y",
+
+authDomain: "dashboard-ahorros.firebaseapp.com",
+
+projectId: "dashboard-ahorros",
+
+storageBucket: "dashboard-ahorros.appspot.com",
+
+messagingSenderId: "182706196966",
+
+appId: "1:182706196966:web:582eb05fe372327f720627"
+
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+let datos=[];
 let archivosActuales=[];
 
-function mostrarToast(msg){
-
-toast.innerText=msg;
-
-toast.style.display="block";
-
-setTimeout(()=>{
-toast.style.display="none";
-},2500);
-
-}
-
-function agregarArchivo(){
+window.agregarArchivo=async()=>{
 
 let files=evidencia.files;
 
 if(!files.length) return;
 
-Array.from(files).forEach(file=>{
+for(const file of files){
 
-let reader=new FileReader();
-
-reader.onload=function(e){
+let base64=await convertirBase64(file);
 
 archivosActuales.push({
 
 nombre:file.name,
 tipo:file.type,
-url:e.target.result
+url:base64
 
 });
 
+}
+
 renderPreview();
 
+evidencia.value="";
+
 };
+
+function convertirBase64(file){
+
+return new Promise((resolve)=>{
+
+let reader=new FileReader();
+
+reader.onload=()=>resolve(reader.result);
 
 reader.readAsDataURL(file);
 
 });
-
-evidencia.value="";
 
 }
 
@@ -539,20 +517,15 @@ previewArchivos.innerHTML+=html;
 
 }
 
-function eliminarArchivo(index){
-
-let confirmar=
-confirm("¿Eliminar archivo?");
-
-if(!confirmar) return;
+window.eliminarArchivo=(index)=>{
 
 archivosActuales.splice(index,1);
 
 renderPreview();
 
-}
+};
 
-function guardar(){
+window.guardar=async()=>{
 
 let originalNum=
 parseFloat(original.value)||0;
@@ -560,114 +533,58 @@ parseFloat(original.value)||0;
 let optimizadoNum=
 parseFloat(optimizado.value)||0;
 
-let registro={
-
-id:Date.now(),
+await addDoc(collection(db,"ahorros"),{
 
 fecha:fecha.value,
-
 proyecto:proyecto.value,
-
 responsable:responsable.value,
-
 unidad:unidad.value,
-
 tipo:tipo.value,
-
 descripcion:descripcion.value,
-
 comentarios:comentarios.value,
-
 original:originalNum,
-
 optimizado:optimizadoNum,
+ahorro:originalNum-optimizadoNum,
+evidencias:archivosActuales
 
-ahorro:
-originalNum-optimizadoNum,
-
-evidencias:[...archivosActuales]
-
-};
-
-datos.push(registro);
-
-localStorage.setItem(
-"ahorros",
-JSON.stringify(datos)
-);
-
-mostrarToast(
-"Registro guardado"
-);
+});
 
 limpiar();
 
 cargar();
 
-}
+};
 
-function editarRegistro(id){
-
-let registro=
-datos.find(d=>d.id===id);
-
-if(!registro) return;
-
-proyecto.value=registro.proyecto;
-responsable.value=registro.responsable;
-unidad.value=registro.unidad;
-tipo.value=registro.tipo;
-descripcion.value=registro.descripcion;
-comentarios.value=registro.comentarios;
-fecha.value=registro.fecha;
-original.value=registro.original;
-optimizado.value=registro.optimizado;
-
-archivosActuales=
-registro.evidencias || [];
-
-renderPreview();
-
-datos=
-datos.filter(d=>d.id!==id);
-
-localStorage.setItem(
-"ahorros",
-JSON.stringify(datos)
-);
-
-mostrarToast(
-"Registro cargado para edición"
-);
-
-cargar();
-
-}
-
-function eliminarRegistro(id){
+window.eliminarRegistro=async(id)=>{
 
 let confirmar=
 confirm("¿Eliminar registro?");
 
 if(!confirmar) return;
 
-datos=
-datos.filter(d=>d.id!==id);
-
-localStorage.setItem(
-"ahorros",
-JSON.stringify(datos)
-);
-
-mostrarToast(
-"Registro eliminado"
-);
+await deleteDoc(doc(db,"ahorros",id));
 
 cargar();
 
-}
+};
 
-function cargar(){
+async function cargar(){
+
+let snapshot=
+await getDocs(
+collection(db,"ahorros")
+);
+
+datos=[];
+
+snapshot.forEach(docu=>{
+
+datos.push({
+id:docu.id,
+...docu.data()
+});
+
+});
 
 tabla.innerHTML="";
 
@@ -677,72 +594,10 @@ let totalAhorro=0;
 let proyectos=new Set();
 let responsables=new Set();
 
-let busquedaTexto=
-busqueda.value.toLowerCase();
-
-let proyectoFiltro=
-filtroProyecto.value;
-
-let responsableFiltro=
-filtroResponsable.value;
-
-let unidadFiltro=
-filtroUnidad.value;
-
-let tipoFiltro=
-filtroTipo.value;
-
-let fechaInicio=
-filtroInicio.value;
-
-let fechaFin=
-filtroFin.value;
-
 datos.forEach(d=>{
 
 proyectos.add(d.proyecto);
 responsables.add(d.responsable);
-
-let texto=
-JSON.stringify(d).toLowerCase();
-
-if(
-busquedaTexto &&
-!texto.includes(busquedaTexto)
-) return;
-
-if(
-proyectoFiltro!=="todos" &&
-d.proyecto!==proyectoFiltro
-) return;
-
-if(
-responsableFiltro!=="todos" &&
-d.responsable!==responsableFiltro
-) return;
-
-if(
-unidadFiltro!=="todos" &&
-d.unidad!==unidadFiltro
-) return;
-
-if(
-tipoFiltro!=="todos" &&
-d.tipo!==tipoFiltro
-) return;
-
-if(
-fechaInicio &&
-d.fecha<fechaInicio
-) return;
-
-if(
-fechaFin &&
-d.fecha>fechaFin
-) return;
-
-totalOriginal+=d.original;
-totalAhorro+=d.ahorro;
 
 let evidenciasHTML="";
 
@@ -816,18 +671,8 @@ $${d.ahorro.toLocaleString()}
 <td>
 
 <button
-class="btn-edit"
-onclick="editarRegistro(${d.id})">
-
-Editar
-
-</button>
-
-<br><br>
-
-<button
 class="btn-danger"
-onclick="eliminarRegistro(${d.id})">
+onclick="eliminarRegistro('${d.id}')">
 
 Eliminar
 
@@ -839,31 +684,8 @@ Eliminar
 
 `;
 
-});
-
-filtroProyecto.innerHTML=
-'<option value="todos">Todos los proyectos</option>';
-
-[...proyectos].forEach(p=>{
-
-filtroProyecto.innerHTML+=`
-<option value="${p}">
-${p}
-</option>
-`;
-
-});
-
-filtroResponsable.innerHTML=
-'<option value="todos">Todos los responsables</option>';
-
-[...responsables].forEach(r=>{
-
-filtroResponsable.innerHTML+=`
-<option value="${r}">
-${r}
-</option>
-`;
+totalOriginal+=d.original;
+totalAhorro+=d.ahorro;
 
 });
 
@@ -929,27 +751,7 @@ backgroundColor:[
 
 }
 
-function limpiarFiltros(){
-
-busqueda.value="";
-
-filtroProyecto.value="todos";
-
-filtroResponsable.value="todos";
-
-filtroUnidad.value="todos";
-
-filtroTipo.value="todos";
-
-filtroInicio.value="";
-
-filtroFin.value="";
-
-cargar();
-
-}
-
-function exportarExcel(){
+window.exportarExcel=()=>{
 
 let ws=
 XLSX.utils.json_to_sheet(datos);
@@ -968,7 +770,7 @@ wb,
 "ahorros.xlsx"
 );
 
-}
+};
 
 function limpiar(){
 
@@ -991,4 +793,5 @@ cargar();
 </script>
 
 </body>
+
 </html>
