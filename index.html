@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
 
 <meta charset="UTF-8">
@@ -14,7 +13,7 @@
 <style>
 
 body{
-font-family:'Segoe UI',sans-serif;
+font-family:Segoe UI;
 background:#eef2f7;
 margin:0;
 color:#1f2937;
@@ -70,10 +69,6 @@ border-radius:10px;
 cursor:pointer;
 margin-top:10px;
 font-weight:bold;
-}
-
-button:hover{
-opacity:.9;
 }
 
 .btn-edit{
@@ -204,10 +199,6 @@ text-decoration:none;
 font-size:12px;
 }
 
-.archivo-link:hover{
-opacity:.9;
-}
-
 </style>
 
 </head>
@@ -235,13 +226,9 @@ FLUTEC
 <div class="container">
 
 <div class="kpi-big">
-
 💰 AHORRO TOTAL
-
 <br>
-
 <span id="ahorroAnual">$0</span>
-
 </div>
 
 <div class="card">
@@ -276,7 +263,7 @@ FLUTEC
 
 <input type="file" id="evidencia" multiple>
 
-<button type="button" onclick="agregarArchivo()">
+<button onclick="agregarArchivo()">
 Agregar archivo
 </button>
 
@@ -296,24 +283,23 @@ Guardar Registro
 
 <input
 id="busqueda"
-placeholder="Buscar..."
-onkeyup="cargar()">
+placeholder="Buscar...">
 
-<select id="filtroProyecto" onchange="cargar()">
+<select id="filtroProyecto">
 <option value="todos">Todos los proyectos</option>
 </select>
 
-<select id="filtroResponsable" onchange="cargar()">
+<select id="filtroResponsable">
 <option value="todos">Todos los responsables</option>
 </select>
 
-<select id="filtroUnidad" onchange="cargar()">
+<select id="filtroUnidad">
 <option value="todos">Todas las unidades</option>
 <option>F&P</option>
 <option>INST</option>
 </select>
 
-<select id="filtroTipo" onchange="cargar()">
+<select id="filtroTipo">
 <option value="todos">Todos los tipos</option>
 <option>Material</option>
 <option>Mano de obra</option>
@@ -321,15 +307,9 @@ onkeyup="cargar()">
 <option>Proveedor</option>
 </select>
 
-<input
-type="date"
-id="filtroInicio"
-onchange="cargar()">
+<input type="date" id="filtroInicio">
 
-<input
-type="date"
-id="filtroFin"
-onchange="cargar()">
+<input type="date" id="filtroFin">
 
 </div>
 
@@ -359,9 +339,7 @@ Exportar Excel
 </div>
 
 <div class="card">
-
 <canvas id="chartGeneral"></canvas>
-
 </div>
 
 <div class="card">
@@ -371,7 +349,6 @@ Exportar Excel
 <thead>
 
 <tr>
-
 <th>Fecha</th>
 <th>Proyecto</th>
 <th>Responsable</th>
@@ -381,7 +358,6 @@ Exportar Excel
 <th>Evidencias</th>
 <th>Ahorro</th>
 <th>Acciones</th>
-
 </tr>
 
 </thead>
@@ -412,12 +388,12 @@ updateDoc
 
 const firebaseConfig = {
 
-apiKey: "AIzaSyDbGafoJEyBDRu3CUNErYWWMiTTopFSw4Y",
-authDomain: "dashboard-ahorros.firebaseapp.com",
-projectId: "dashboard-ahorros",
-storageBucket: "dashboard-ahorros.appspot.com",
-messagingSenderId: "182706196966",
-appId: "1:182706196966:web:582eb05fe372327f720627"
+apiKey:"AIzaSyDbGafoJEyBDRu3CUNErYWWMiTTopFSw4Y",
+authDomain:"dashboard-ahorros.firebaseapp.com",
+projectId:"dashboard-ahorros",
+storageBucket:"dashboard-ahorros.appspot.com",
+messagingSenderId:"182706196966",
+appId:"1:182706196966:web:582eb05fe372327f720627"
 
 };
 
@@ -431,8 +407,6 @@ let editandoId=null;
 window.agregarArchivo=async()=>{
 
 let files=evidencia.files;
-
-if(!files.length) return;
 
 for(const file of files){
 
@@ -448,13 +422,11 @@ url:base64
 
 renderPreview();
 
-evidencia.value="";
-
 };
 
 function convertirBase64(file){
 
-return new Promise((resolve)=>{
+return new Promise(resolve=>{
 
 let reader=new FileReader();
 
@@ -472,11 +444,7 @@ previewArchivos.innerHTML="";
 
 archivosActuales.forEach((a,index)=>{
 
-let html="";
-
-if(a.tipo.includes("image")){
-
-html=`
+previewArchivos.innerHTML+=`
 
 <div class="preview-item">
 
@@ -488,46 +456,30 @@ X
 
 </button>
 
-<a href="${a.url}" download="${a.nombre}">
+${
+a.tipo.includes("image")
+?
 
+`<a href="${a.url}" download="${a.nombre}">
 <img src="${a.url}">
+</a>`
 
-</a>
+:
 
-</div>
-
-`;
-
-}else{
-
-html=`
-
-<div class="preview-item">
-
-<button
-class="preview-remove"
-onclick="eliminarArchivo(${index})">
-
-X
-
-</button>
-
-<a
+`<a
 href="${a.url}"
 download="${a.nombre}"
 class="preview-file">
 
 ${a.nombre}
 
-</a>
+</a>`
+
+}
 
 </div>
 
 `;
-
-}
-
-previewArchivos.innerHTML+=html;
 
 });
 
@@ -535,10 +487,7 @@ previewArchivos.innerHTML+=html;
 
 window.eliminarArchivo=(index)=>{
 
-let confirmar=
-confirm("¿Eliminar archivo?");
-
-if(!confirmar) return;
+if(!confirm("¿Eliminar archivo?")) return;
 
 archivosActuales.splice(index,1);
 
@@ -599,8 +548,6 @@ window.editarRegistro=(id)=>{
 let d=
 datos.find(x=>x.id===id);
 
-if(!d) return;
-
 editandoId=id;
 
 proyecto.value=d.proyecto;
@@ -627,10 +574,7 @@ behavior:"smooth"
 
 window.eliminarRegistro=async(id)=>{
 
-let confirmar=
-confirm("¿Eliminar registro?");
-
-if(!confirmar) return;
+if(!confirm("¿Eliminar registro?")) return;
 
 await deleteDoc(
 doc(db,"ahorros",id)
@@ -658,122 +602,138 @@ id:docu.id,
 
 });
 
-tabla.innerHTML="";
-
-let totalOriginal=0;
-let totalAhorro=0;
-
-let proyectos=new Set();
-let responsables=new Set();
-
 let textoBusqueda=
-document.getElementById("busqueda").value.toLowerCase();
+busqueda.value.toLowerCase();
 
-let filtroProyectoValor=
-document.getElementById("filtroProyecto").value;
+let proyectoFiltro=
+filtroProyecto.value;
 
-let filtroResponsableValor=
-document.getElementById("filtroResponsable").value;
+let responsableFiltro=
+filtroResponsable.value;
 
-let filtroUnidadValor=
-document.getElementById("filtroUnidad").value;
+let unidadFiltro=
+filtroUnidad.value;
 
-let filtroTipoValor=
-document.getElementById("filtroTipo").value;
+let tipoFiltro=
+filtroTipo.value;
 
-let filtroInicioValor=
-document.getElementById("filtroInicio").value;
+let inicioFiltro=
+filtroInicio.value;
 
-let filtroFinValor=
-document.getElementById("filtroFin").value;
+let finFiltro=
+filtroFin.value;
 
-datos.forEach(d=>{
+let proyectos=[
+...new Set(
+datos.map(d=>d.proyecto)
+)
+];
 
-proyectos.add(d.proyecto || "");
-responsables.add(d.responsable || "");
-
-});
+let responsables=[
+...new Set(
+datos.map(d=>d.responsable)
+)
+];
 
 filtroProyecto.innerHTML=
-'<option value="todos">Todos los proyectos</option>';
+`<option value="todos">
+Todos los proyectos
+</option>`;
 
 proyectos.forEach(p=>{
 
+if(p){
+
 filtroProyecto.innerHTML+=
-`<option value="${p}">${p}</option>`;
+`<option value="${p}">
+${p}
+</option>`;
+
+}
 
 });
 
-filtroProyecto.value=filtroProyectoValor;
+filtroProyecto.value=
+proyectoFiltro;
 
 filtroResponsable.innerHTML=
-'<option value="todos">Todos los responsables</option>';
+`<option value="todos">
+Todos los responsables
+</option>`;
 
 responsables.forEach(r=>{
 
+if(r){
+
 filtroResponsable.innerHTML+=
-`<option value="${r}">${r}</option>`;
+`<option value="${r}">
+${r}
+</option>`;
+
+}
 
 });
 
-filtroResponsable.value=filtroResponsableValor;
+filtroResponsable.value=
+responsableFiltro;
 
-let datosFiltrados = datos.filter(d => {
+let datosFiltrados=
+datos.filter(d=>{
 
-let textoCompleto = `
-${d.proyecto || ""}
-${d.responsable || ""}
-${d.unidad || ""}
-${d.tipo || ""}
-${d.descripcion || ""}
-${d.comentarios || ""}
+let texto=`
+${d.proyecto}
+${d.responsable}
+${d.unidad}
+${d.tipo}
+${d.descripcion}
+${d.comentarios}
 `.toLowerCase();
 
 if(
 textoBusqueda &&
-!textoCompleto.includes(textoBusqueda)
+!texto.includes(textoBusqueda)
 ){
 return false;
 }
 
 if(
-filtroProyectoValor !== "todos" &&
-d.proyecto !== filtroProyectoValor
+proyectoFiltro!="todos" &&
+d.proyecto!=proyectoFiltro
 ){
 return false;
 }
 
 if(
-filtroResponsableValor !== "todos" &&
-d.responsable !== filtroResponsableValor
+responsableFiltro!="todos" &&
+d.responsable!=responsableFiltro
 ){
 return false;
 }
 
 if(
-filtroUnidadValor !== "todos" &&
-d.unidad !== filtroUnidadValor
+unidadFiltro!="todos" &&
+d.unidad!=unidadFiltro
 ){
 return false;
 }
 
 if(
-filtroTipoValor !== "todos" &&
-d.tipo !== filtroTipoValor
+tipoFiltro!="todos" &&
+d.tipo!=tipoFiltro
 ){
 return false;
 }
 
 if(
-filtroInicioValor &&
-d.fecha < filtroInicioValor
+inicioFiltro &&
+d.fecha < inicioFiltro
 ){
 return false;
 }
 
 if(
-filtroFinValor &&
-d.fecha > filtroFinValor
+finFiltro &&
+d.fecha > finFiltro
 ){
 return false;
 }
@@ -782,48 +742,42 @@ return true;
 
 });
 
+tabla.innerHTML="";
+
+let totalOriginal=0;
+let totalAhorro=0;
+
 datosFiltrados.forEach(d=>{
 
 let evidenciasHTML="";
 
 (d.evidencias||[]).forEach(a=>{
 
-if(a.tipo.includes("image")){
+evidenciasHTML+=
+a.tipo.includes("image")
 
-evidenciasHTML+=`
+?
 
-<a href="${a.url}" download="${a.nombre}">
-
+`<a href="${a.url}" download="${a.nombre}">
 <img
 src="${a.url}"
 style="
 width:50px;
 height:50px;
+object-fit:cover;
 border-radius:8px;
 margin:2px;
-object-fit:cover;
 ">
+</a>`
 
-</a>
+:
 
-`;
-
-}else{
-
-evidenciasHTML+=`
-
-<a
+`<a
 href="${a.url}"
 download="${a.nombre}"
 class="archivo-link">
-
 ${a.nombre}
-
-</a>
-
-`;
-
-}
+</a>`;
 
 });
 
@@ -831,34 +785,22 @@ tabla.innerHTML+=`
 
 <tr>
 
-<td>${d.fecha || ""}</td>
-
-<td>${d.proyecto || ""}</td>
-
-<td>${d.responsable || ""}</td>
-
-<td>${d.unidad || ""}</td>
-
-<td>${d.tipo || ""}</td>
+<td>${d.fecha||""}</td>
+<td>${d.proyecto||""}</td>
+<td>${d.responsable||""}</td>
+<td>${d.unidad||""}</td>
+<td>${d.tipo||""}</td>
 
 <td>
-
-${d.descripcion || ""}
-
+${d.descripcion||""}
 <br>
-
-<small>
-${d.comentarios || ""}
-</small>
-
+<small>${d.comentarios||""}</small>
 </td>
 
-<td>
-${evidenciasHTML}
-</td>
+<td>${evidenciasHTML}</td>
 
 <td>
-$${(d.ahorro || 0).toLocaleString()}
+$${(d.ahorro||0).toLocaleString()}
 </td>
 
 <td>
@@ -887,8 +829,8 @@ Eliminar
 
 `;
 
-totalOriginal+=d.original || 0;
-totalAhorro+=d.ahorro || 0;
+totalOriginal+=d.original||0;
+totalAhorro+=d.ahorro||0;
 
 });
 
@@ -990,6 +932,14 @@ archivosActuales=[];
 renderPreview();
 
 }
+
+busqueda.addEventListener("input",cargar);
+filtroProyecto.addEventListener("change",cargar);
+filtroResponsable.addEventListener("change",cargar);
+filtroUnidad.addEventListener("change",cargar);
+filtroTipo.addEventListener("change",cargar);
+filtroInicio.addEventListener("change",cargar);
+filtroFin.addEventListener("change",cargar);
 
 cargar();
 
