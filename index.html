@@ -718,9 +718,9 @@ filtroResponsable.innerHTML+=
 
 filtroResponsable.value=filtroResponsableValor;
 
-datos.forEach(d=>{
+let datosFiltrados = datos.filter(d => {
 
-let textoCompleto=`
+let textoCompleto = `
 ${d.proyecto || ""}
 ${d.responsable || ""}
 ${d.unidad || ""}
@@ -733,50 +733,56 @@ if(
 textoBusqueda &&
 !textoCompleto.includes(textoBusqueda)
 ){
-return;
+return false;
 }
 
 if(
-filtroProyectoValor!=="todos" &&
-d.proyecto!==filtroProyectoValor
+filtroProyectoValor !== "todos" &&
+d.proyecto !== filtroProyectoValor
 ){
-return;
+return false;
 }
 
 if(
-filtroResponsableValor!=="todos" &&
-d.responsable!==filtroResponsableValor
+filtroResponsableValor !== "todos" &&
+d.responsable !== filtroResponsableValor
 ){
-return;
+return false;
 }
 
 if(
-filtroUnidadValor!=="todos" &&
-d.unidad!==filtroUnidadValor
+filtroUnidadValor !== "todos" &&
+d.unidad !== filtroUnidadValor
 ){
-return;
+return false;
 }
 
 if(
-filtroTipoValor!=="todos" &&
-d.tipo!==filtroTipoValor
+filtroTipoValor !== "todos" &&
+d.tipo !== filtroTipoValor
 ){
-return;
+return false;
 }
 
 if(
 filtroInicioValor &&
 d.fecha < filtroInicioValor
 ){
-return;
+return false;
 }
 
 if(
 filtroFinValor &&
 d.fecha > filtroFinValor
 ){
-return;
+return false;
 }
+
+return true;
+
+});
+
+datosFiltrados.forEach(d=>{
 
 let evidenciasHTML="";
 
