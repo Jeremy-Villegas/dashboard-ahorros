@@ -1,3 +1,8 @@
+<!-- ===========================
+REEMPLAZA TODO TU index.html
+POR ESTE COMPLETO
+=========================== -->
+
 <!DOCTYPE html>
 <html lang="es">
 
@@ -50,7 +55,9 @@ margin-bottom:20px;
 box-shadow:0 4px 15px rgba(0,0,0,.08);
 }
 
-input,select,textarea{
+input,
+select,
+textarea{
 width:100%;
 padding:12px;
 margin-top:10px;
@@ -191,6 +198,21 @@ grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 gap:15px;
 }
 
+.archivo-link{
+display:inline-block;
+margin:5px;
+padding:8px 10px;
+background:#2563eb;
+color:white;
+border-radius:8px;
+text-decoration:none;
+font-size:12px;
+}
+
+.archivo-link:hover{
+opacity:.9;
+}
+
 </style>
 
 </head>
@@ -304,8 +326,15 @@ onkeyup="cargar()">
 <option>Proveedor</option>
 </select>
 
-<input type="date" id="filtroInicio" onchange="cargar()">
-<input type="date" id="filtroFin" onchange="cargar()">
+<input
+type="date"
+id="filtroInicio"
+onchange="cargar()">
+
+<input
+type="date"
+id="filtroFin"
+onchange="cargar()">
 
 </div>
 
@@ -383,7 +412,8 @@ collection,
 addDoc,
 getDocs,
 deleteDoc,
-doc
+doc,
+updateDoc
 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -409,6 +439,7 @@ const db = getFirestore(app);
 
 let datos=[];
 let archivosActuales=[];
+let editandoId=null;
 
 window.agregarArchivo=async()=>{
 
@@ -499,6 +530,7 @@ X
 <a
 href="${a.url}"
 target="_blank"
+download="${a.nombre}"
 class="preview-file">
 
 ${a.nombre}
@@ -519,6 +551,11 @@ previewArchivos.innerHTML+=html;
 
 window.eliminarArchivo=(index)=>{
 
+let confirmar=
+confirm("¿Eliminar archivo?");
+
+if(!confirmar) return;
+
 archivosActuales.splice(index,1);
 
 renderPreview();
@@ -533,7 +570,7 @@ parseFloat(original.value)||0;
 let optimizadoNum=
 parseFloat(optimizado.value)||0;
 
-await addDoc(collection(db,"ahorros"),{
+let registro={
 
 fecha:fecha.value,
 proyecto:proyecto.value,
@@ -547,11 +584,60 @@ optimizado:optimizadoNum,
 ahorro:originalNum-optimizadoNum,
 evidencias:archivosActuales
 
-});
+};
+
+if(editandoId){
+
+await updateDoc(
+doc(db,"ahorros",editandoId),
+registro
+);
+
+editandoId=null;
+
+}else{
+
+await addDoc(
+collection(db,"ahorros"),
+registro
+);
+
+}
 
 limpiar();
 
 cargar();
+
+};
+
+window.editarRegistro=(id)=>{
+
+let d=
+datos.find(x=>x.id===id);
+
+if(!d) return;
+
+editandoId=id;
+
+proyecto.value=d.proyecto;
+responsable.value=d.responsable;
+unidad.value=d.unidad;
+tipo.value=d.tipo;
+descripcion.value=d.descripcion;
+comentarios.value=d.comentarios;
+fecha.value=d.fecha;
+original.value=d.original;
+optimizado.value=d.optimizado;
+
+archivosActuales=
+d.evidencias || [];
+
+renderPreview();
+
+window.scrollTo({
+top:0,
+behavior:"smooth"
+});
 
 };
 
@@ -562,7 +648,9 @@ confirm("¿Eliminar registro?");
 
 if(!confirmar) return;
 
-await deleteDoc(doc(db,"ahorros",id));
+await deleteDoc(
+doc(db,"ahorros",id)
+);
 
 cargar();
 
@@ -616,6 +704,7 @@ width:50px;
 height:50px;
 border-radius:8px;
 margin:2px;
+object-fit:cover;
 ">
 
 </a>
@@ -628,11 +717,13 @@ evidenciasHTML+=`
 
 <a
 href="${a.url}"
-target="_blank">
+target="_blank"
+download="${a.nombre}"
+class="archivo-link">
 
 ${a.nombre}
 
-</a><br>
+</a>
 
 `;
 
@@ -644,31 +735,47 @@ tabla.innerHTML+=`
 
 <tr>
 
-<td>${d.fecha}</td>
-<td>${d.proyecto}</td>
-<td>${d.responsable}</td>
-<td>${d.unidad}</td>
-<td>${d.tipo}</td>
+<td>${d.fecha || ""}</td>
+
+<td>${d.proyecto || ""}</td>
+
+<td>${d.responsable || ""}</td>
+
+<td>${d.unidad || ""}</td>
+
+<td>${d.tipo || ""}</td>
 
 <td>
 
-${d.descripcion}
+${d.descripcion || ""}
 
 <br>
 
 <small>
-${d.comentarios||""}
+${d.comentarios || ""}
 </small>
 
 </td>
 
-<td>${evidenciasHTML}</td>
-
 <td>
-$${d.ahorro.toLocaleString()}
+${evidenciasHTML}
 </td>
 
 <td>
+$${(d.ahorro || 0).toLocaleString()}
+</td>
+
+<td>
+
+<button
+class="btn-edit"
+onclick="editarRegistro('${d.id}')">
+
+Editar
+
+</button>
+
+<br><br>
 
 <button
 class="btn-danger"
@@ -684,8 +791,8 @@ Eliminar
 
 `;
 
-totalOriginal+=d.original;
-totalAhorro+=d.ahorro;
+totalOriginal+=d.original || 0;
+totalAhorro+=d.ahorro || 0;
 
 });
 
