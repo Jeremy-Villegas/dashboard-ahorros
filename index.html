@@ -1,6 +1,5 @@
 <!-- ===========================
-REEMPLAZA TODO TU index.html
-POR ESTE COMPLETO
+INDEX.HTML COMPLETO FINAL
 =========================== -->
 
 <!DOCTYPE html>
@@ -503,7 +502,7 @@ X
 
 </button>
 
-<a href="${a.url}" target="_blank">
+<a href="${a.url}" download="${a.nombre}">
 
 <img src="${a.url}">
 
@@ -529,7 +528,6 @@ X
 
 <a
 href="${a.url}"
-target="_blank"
 download="${a.nombre}"
 class="preview-file">
 
@@ -679,13 +677,7 @@ tabla.innerHTML="";
 let totalOriginal=0;
 let totalAhorro=0;
 
-let proyectos=new Set();
-let responsables=new Set();
-
 datos.forEach(d=>{
-
-proyectos.add(d.proyecto);
-responsables.add(d.responsable);
 
 let evidenciasHTML="";
 
@@ -695,7 +687,7 @@ if(a.tipo.includes("image")){
 
 evidenciasHTML+=`
 
-<a href="${a.url}" target="_blank">
+<a href="${a.url}" download="${a.nombre}">
 
 <img
 src="${a.url}"
@@ -717,7 +709,6 @@ evidenciasHTML+=`
 
 <a
 href="${a.url}"
-target="_blank"
 download="${a.nombre}"
 class="archivo-link">
 
